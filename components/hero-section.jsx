@@ -67,7 +67,7 @@ export default function HeroSection() {
 
             <div className="flex flex-wrap gap-4 mb-8">
               <Button
-                className="bg-primary hover:bg-primary/90 bounce-on-hover"
+                className="bg-primary text-white hover:bg-primary/90 bounce-on-hover"
                 onClick={(e) => {
                   e.preventDefault()
                   scrollToSection("projects")
@@ -159,7 +159,7 @@ export default function HeroSection() {
               <div className="absolute inset-0 rounded-full bg-gradient-to-r from-blue-300 via-[#ec4899] to-blue-500 opacity-20 blur-3xl"></div>
               <div className="relative z-10 w-full h-full rounded-full border-2 border-blue-500/30 overflow-hidden">
                 <Image
-                  src="/hassy.jpeg?height=600&width=600"
+                  src="/hassy.jpeg"
                   alt="Hassana Abdullahi"
                   width={600}
                   height={600}
