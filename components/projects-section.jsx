@@ -100,7 +100,7 @@ console.log(projects);
   return (
     <section id="projects" className="py-10 bg-muted/30">
       <div className="container mx-auto px-4">
-        <div className="max-w-7xl mx-auto">
+        <div className="max-w-6xl mx-auto">
           <div className="flex items-center justify-center mb-12">
             <div className="h-px w-12 bg-primary mr-4"></div>
             <h2 className="text-3xl font-bold">

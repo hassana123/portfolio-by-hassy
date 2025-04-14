@@ -210,7 +210,7 @@ export default function ContactSection() {
                       Sending...
                     </span>
                   ) : (
-                    <span className="flex items-center gap-2">
+                    <span className="flex text-white items-center gap-2">
                       <Send className="h-4 w-4" />
                       Send Message
                     </span>

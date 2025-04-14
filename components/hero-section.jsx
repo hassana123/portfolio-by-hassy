@@ -41,7 +41,7 @@ export default function HeroSection() {
   return (
     <section id="hero" className="relative min-h-screen flex items-center justify-center pt-16 overflow-hidden">
       {/* <ParticleCanvas /> */}
-      <div className="container mx-auto px-10">
+      <div className="container mx-auto px-20">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
           <motion.div initial={{ opacity: 0, x: -50 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.8 }}>
             <div className="inline-flex items-center gap-2 mb-4 px-3 py-1 rounded-full bg-[#ec489915] border border-[#ec489930]">
@@ -159,7 +159,7 @@ export default function HeroSection() {
               <div className="absolute inset-0 rounded-full bg-gradient-to-r from-blue-300 via-[#ec4899] to-blue-500 opacity-20 blur-3xl"></div>
               <div className="relative z-10 w-full h-full rounded-full border-2 border-blue-500/30 overflow-hidden">
                 <Image
-                  src="/hassy.jpeg"
+                  src="./hassy.JPEG"
                   alt="Hassana Abdullahi"
                   width={600}
                   height={600}
