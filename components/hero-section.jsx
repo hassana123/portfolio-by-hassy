@@ -39,7 +39,7 @@ export default function HeroSection() {
   if (!mounted) return null
 
   return (
-    <section id="hero" className="relative min-h-screen flex items-center justify-center pt-16 overflow-hidden">
+    <section id="hero" className="relative min-h-screen flex items-center justify-center pt-20 overflow-hidden">
       {/* <ParticleCanvas /> */}
       <div className="container mx-auto px-20">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
@@ -159,7 +159,7 @@ export default function HeroSection() {
               <div className="absolute inset-0 rounded-full bg-gradient-to-r from-blue-300 via-[#ec4899] to-blue-500 opacity-20 blur-3xl"></div>
               <div className="relative z-10 w-full h-full rounded-full border-2 border-blue-500/30 overflow-hidden">
                 <Image
-                  src="./hassy.JPEG"
+                  src="./placeholder.svg"
                   alt="Hassana Abdullahi"
                   width={600}
                   height={600}
