@@ -74,7 +74,7 @@ export default function AboutSection() {
               <h3 className="text-xl font-semibold mb-2">Experience</h3>
               <p className="text-foreground/70">
                 From hackathons to client work, I’ve built projects ranging from
-                quick landing pages to full-blown web applications—with real
+                quick landing pages to full blown web applications with real
                 users (not just my friends).
                 <span className="italic block mt-2 text-sm">
                   Debugging? Let's just say I've had dreams where console.log
@@ -94,7 +94,7 @@ export default function AboutSection() {
                 ready.
                 <span className="italic block mt-2 text-sm">
                   My code? It may not be perfect, but it's honest, hard-working,
-                  and a little sassy—just like me.
+                  and a little sassylike me.
                 </span>
               </p>
             </div>
