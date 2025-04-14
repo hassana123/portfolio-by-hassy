@@ -3,7 +3,7 @@
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
 import { Coffee, Code, Lightbulb } from "lucide-react";
-
+import Image from "next/image";
 export default function AboutSection() {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, amount: 0.3 });
@@ -99,6 +99,7 @@ export default function AboutSection() {
               </p>
             </div>
           </motion.div>
+          <div className="grid md:grid-cols-2 items-center">
           <motion.div
             variants={itemVariants}
             className="mt-10 max-w-6xl mx-auto "
@@ -106,7 +107,7 @@ export default function AboutSection() {
             <p className="text-foreground/80 mb-4">
               I am a frontend developer from Nigeria who enjoys building digital
               experiences that are not just functional but thoughtful. I’m big
-              on clean code, sleek UI, and making things work seamlessly
+              on clean code, sleek user interface, and making things work seamlessly
             </p>
             <p className="text-foreground/80">
               Beyond the code, I thrive in community spaces, mentoring,
@@ -121,7 +122,50 @@ export default function AboutSection() {
                 with your emotions and leave you questioning everything.
               </i>
             </p>
-          </motion.div>{" "}
+          </motion.div>
+           <motion.div
+                       initial={{ opacity: 0, scale: 0.8 }}
+                       animate={{ opacity: 1, scale: 1 }}
+                       transition={{ duration: 0.8, delay: 0.2 }}
+                       className="relative"
+                     >
+                       <div className="relative mx-auto w-full max-w-md aspect-square">
+                         <div className="absolute inset-0 rounded-full bg-gradient-to-r from-blue-300 via-[#ec4899] to-blue-500 opacity-20 blur-3xl"></div>
+                         <div className="relative z-10 w-full h-full rounded-full border-2 border-blue-500/30 overflow-hidden">
+                           <Image
+                             src="./placeholder.svg"
+                             alt="Hassana Abdullahi"
+                             width={600}
+                             height={600}
+                             priority
+                             className="object-cover"
+                           />
+                         </div>
+           
+                         {/* Decorative elements */}
+                         {[...Array(5)].map((_, i) => (
+                           <motion.div
+                             key={i}
+                             className={`absolute w-20 h-20 rounded-full ${i % 2 === 0 ? "bg-blue-500/10" : "bg-[#ec4899]/10"}`}
+                             style={{
+                               top: `${Math.random() * 100}%`,
+                               left: `${Math.random() * 100}%`,
+                             }}
+                             animate={{
+                               x: [0, 30, 0],
+                               y: [0, 30, 0],
+                               opacity: [0.4, 0.8, 0.4],
+                             }}
+                             transition={{
+                               duration: 5 + i,
+                               repeat: Number.POSITIVE_INFINITY,
+                               delay: i,
+                             }}
+                           />
+                         ))}
+                       </div>
+                     </motion.div>
+          </div>
         </motion.div>
       </div>
     </section>
