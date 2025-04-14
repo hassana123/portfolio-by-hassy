@@ -221,7 +221,7 @@ console.log(projects);
           )}
 
           <div className="mt-12 text-center">
-            <Button asChild className="bg-gradient-to-r from-blue-500 to-[#ec4899] hover:opacity-90 bounce-on-hover">
+            <Button asChild className="text-white bg-gradient-to-r from-blue-500 to-[#ec4899] hover:opacity-90 bounce-on-hover">
               <a href="https://github.com/hassana123" target="_blank" rel="noopener noreferrer">
                 View More On GitHub
               </a>

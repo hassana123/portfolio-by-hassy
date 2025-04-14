@@ -46,7 +46,7 @@ export default function HeroSection() {
           <motion.div initial={{ opacity: 0, x: -50 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.8 }}>
             <div className="inline-flex items-center gap-2 mb-4 px-3 py-1 rounded-full bg-[#ec489915] border border-[#ec489930]">
               <Sparkles className="h-4 w-4 text-[#ec4899]" />
-              <span className="text-sm font-medium">Frontend Developer & Content Creator</span>
+              <span className="text-sm font-medium">Frontend Developer</span>
             </div>
 
             <h1 className="text-4xl md:text-6xl font-bold mb-4">

@@ -73,7 +73,7 @@ export default function BlogSection() {
 
   if (loading) {
     return (
-      <section id="blog" className="py-20">
+      <section id="blog" className="py-10">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
             <div className="flex items-center justify-center mb-12">
@@ -106,15 +106,15 @@ export default function BlogSection() {
   }
 
   return (
-    <section id="blog" className="py-20">
+    <section id="blog" className="py-10">
       <div className="container mx-auto px-4">
         <div className="max-w-6xl mx-auto">
-          <div className="flex items-center justify-center mb-12">
+          <div className="flex items-center justify-center mb-6">
             <div className="h-px w-12 bg-primary mr-4"></div>
             <h2 className="text-3xl font-bold">
               My <span className="pink-gradient-text">Articles</span>
             </h2>
-            <div className="h-px w-12 bg-primary ml-4"></div>
+            <div className="h-px w-10 bg-primary ml-4"></div>
           </div>
 
           <div className="text-center mb-12">
@@ -217,7 +217,7 @@ export default function BlogSection() {
                 href="https://hashnode.com/@hassana"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-2"
+                className="flex items-center text-white  gap-2"
               >
                 <Eye className="h-4 w-4" />
                 <span>View All Articles</span>

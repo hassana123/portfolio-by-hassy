@@ -2,7 +2,7 @@
 
 import { useRef } from "react"
 import { motion, useInView } from "framer-motion"
-import { Check, LayoutDashboard, Settings, Notebook, ImageIcon, FileText } from "lucide-react"
+import { Check, LayoutDashboard, MessageSquare, Settings, Notebook, ImageIcon, FileText } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
 export default function DynamicPreviewSection() {
@@ -49,63 +49,38 @@ export default function DynamicPreviewSection() {
           </motion.div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <motion.div variants={itemVariants} className="space-y-6">
-              <div className="flex items-start gap-4">
-                <div className="bg-primary/10 rounded-full p-2 mt-1">
-                  <Check className="h-5 w-5 text-primary" />
-                </div>
-                <div>
-                  <h3 className="text-xl font-semibold mb-2">Easily add, update, or remove projects</h3>
-                  <p className="text-foreground/70">
-                    Showcase your work with beautiful project cards. Add images, descriptions, tags, and links to live
-                    demos and repositories.
-                  </p>
-                </div>
-              </div>
+  <motion.div variants={itemVariants} className="space-y-6">
+    <div className="flex items-start gap-4">
+      <div className="bg-primary/10 rounded-full p-2 mt-1">
+        <Check className="h-5 w-5 text-primary" />
+      </div>
+      <div>
+        <h3 className="text-xl font-semibold mb-2">A Portfolio That Grows With You</h3>
+        <p className="text-foreground/70 max-w-2xl">
+          Imagine a portfolio that evolves as you do — no more digging through code just to update one project or skill.
+          This setup lets you manage your content from a sleek dashboard, so you can focus on what you actually enjoy: building cool stuff.
+        </p>
+      </div>
+    </div>
 
-              <div className="flex items-start gap-4">
-                <div className="bg-primary/10 rounded-full p-2 mt-1">
-                  <Check className="h-5 w-5 text-primary" />
-                </div>
-                <div>
-                  <h3 className="text-xl font-semibold mb-2">Update your skills and expertise as you grow</h3>
-                  <p className="text-foreground/70">
-                    Keep your skill set current by easily adding new technologies and adjusting proficiency levels as
-                    you learn and grow.
-                  </p>
-                </div>
-              </div>
+    <div className="flex items-start gap-4">
+      <div className="bg-primary/10 rounded-full p-2 mt-1">
+        <MessageSquare className="h-5 w-5 text-primary" />
+      </div>
+      <div>
+        <p className="text-foreground/70 max-w-2xl">
+          If you want something this smooth, dynamic, and unapologetically tailored to you, slide into my inbox.
+          Let’s build your dream portfolio — the one that works as hard as you do.
+        </p>
+      </div>
+    </div>
 
-              <div className="flex items-start gap-4">
-                <div className="bg-primary/10 rounded-full p-2 mt-1">
-                  <Check className="h-5 w-5 text-primary" />
-                </div>
-                <div>
-                  <h3 className="text-xl font-semibold mb-2">Edit your personal information and about section</h3>
-                  <p className="text-foreground/70">
-                    Customize your bio, contact information, and personal details to keep your portfolio up-to-date.
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-4">
-                <div className="bg-primary/10 rounded-full p-2 mt-1">
-                  <Check className="h-5 w-5 text-primary" />
-                </div>
-                <div>
-                  <h3 className="text-xl font-semibold mb-2">Upload and manage project images securely</h3>
-                  <p className="text-foreground/70">
-                    Easily upload, store, and manage images for your projects with secure cloud storage integration.
-                  </p>
-                </div>
-              </div>
-
-              <div className="pt-4">
-                <Button asChild className="bg-primary hover:bg-primary/50 text-white">
-                  <a href="/login">Admin Login</a>
-                </Button>
-              </div>
-            </motion.div>
+    <div className="pt-4">
+      <Button asChild className="bg-primary hover:bg-primary/50 text-white">
+        <a href="#contact">Send Me a Message Now</a>
+      </Button>
+    </div>
+  </motion.div>
 
             <motion.div variants={itemVariants} className="relative">
               <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden">

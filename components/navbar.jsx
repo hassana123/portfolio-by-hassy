@@ -47,9 +47,19 @@ export default function Navbar() {
 
   const handleNavClick = (e, sectionId) => {
     e.preventDefault()
-    scrollToSection(sectionId)
-    if (isOpen) setIsOpen(false)
+  
+    if (isOpen) {
+      setIsOpen(false)
+  
+      // Wait for mobile menu to close before scrolling
+      setTimeout(() => {
+        scrollToSection(sectionId)
+      }, 300) // Match with animation duration of AnimatePresence
+    } else {
+      scrollToSection(sectionId)
+    }
   }
+  
 
   const handleLogoClick = (e) => {
     e.preventDefault()
@@ -68,7 +78,7 @@ export default function Navbar() {
       className={`fixed top-0 w-full z-50 transition-all duration-300 ${scrolled ? "bg-background/80 backdrop-blur-md shadow-sm" : ""}`}
     >
       <div className="container mx-auto px-4 py-3 flex items-center justify-between">
-        <a href="#" onClick={handleLogoClick} className="relative">
+        <span onClick={handleLogoClick} className="relative">
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
@@ -94,7 +104,7 @@ export default function Navbar() {
               </motion.div>
             )}
           </AnimatePresence>
-        </a>
+        </span>
 
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center space-x-6">
@@ -130,14 +140,14 @@ export default function Navbar() {
             >
               {mounted && theme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
             </Button>
-            <Button
+            {/* <Button
               variant="ghost"
               size="icon"
               className="text-[#ec4899] hover:bg-[#ec489915] bounce-on-hover"
               onClick={() => scrollToSection("contact")}
             >
               <Coffee className="h-5 w-5" />
-            </Button>
+            </Button> */}
           </motion.div>
         </nav>
 
@@ -177,7 +187,7 @@ export default function Navbar() {
             <div className="container mx-auto px-4 py-4 flex flex-col space-y-4">
               {navItems.map((item, index) => (
                 <a
-                  key={item.name}
+                  key={index}
                   href={`#${item.href}`}
                   onClick={(e) => handleNavClick(e, item.href)}
                   className="text-foreground/80 hover:text-[#ec4899] py-2 border-b border-border flex items-center"
