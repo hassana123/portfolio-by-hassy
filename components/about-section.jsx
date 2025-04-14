@@ -135,8 +135,8 @@ export default function AboutSection() {
                            <Image
                              src="./placeholder.svg"
                              alt="Hassana Abdullahi"
-                             width={600}
-                             height={600}
+                             width={400}
+                             height={400}
                              priority
                              className="object-cover"
                            />
