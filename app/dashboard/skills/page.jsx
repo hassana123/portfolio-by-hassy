@@ -202,7 +202,7 @@ export default function SkillsPage() {
           <h1 className="text-2xl font-bold">Skills</h1>
           <p className="text-foreground/70">Manage your skills and proficiency levels</p>
         </div>
-        <Button className="mt-4 sm:mt-0 bg-pink-500 hover:bg-pink-600" onClick={() => setIsAddingSkill(!isAddingSkill)}>
+        <Button className="mt-4 text-white sm:mt-0 bg-pink-500 hover:bg-pink-600" onClick={() => setIsAddingSkill(!isAddingSkill)}>
           {isAddingSkill ? (
             <>
               <X className="mr-2 h-4 w-4" />
@@ -261,7 +261,7 @@ export default function SkillsPage() {
                 <Button variant="outline" onClick={() => setIsAddingSkill(false)}>
                   Cancel
                 </Button>
-                <Button onClick={handleAddSkill} className="bg-pink-500 hover:bg-pink-600">
+                <Button onClick={handleAddSkill} className="text-white bg-pink-500 hover:bg-pink-600">
                   <Plus className="mr-2 h-4 w-4" />
                   Add Skill
                 </Button>

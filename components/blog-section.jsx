@@ -214,7 +214,7 @@ export default function BlogSection() {
           <div className="mt-12 text-center">
             <Button asChild className="bg-gradient-to-r from-blue-500 to-[#ec4899] hover:opacity-90 bounce-on-hover">
               <a
-                href="https://hashnode.com/@hassana"
+                href="https://hashnode.com/@TechSultana"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center text-white  gap-2"

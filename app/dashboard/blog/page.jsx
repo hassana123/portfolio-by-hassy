@@ -254,7 +254,7 @@ export default function BlogPage() {
           <h1 className="text-2xl font-bold">Blog Posts</h1>
           <p className="text-foreground/70">Manage your Hashnode articles</p>
         </div>
-        <Button className="mt-4 sm:mt-0 bg-pink-500 hover:bg-pink-600" onClick={() => handleOpenDialog()}>
+        <Button className="mt-4 sm:mt-0 text-white  bg-pink-500 hover:bg-pink-600" onClick={() => handleOpenDialog()}>
           <PlusCircle className="mr-2 h-4 w-4" />
           Add New Article
         </Button>
@@ -399,7 +399,7 @@ export default function BlogPage() {
           <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
             Cancel
           </Button>
-          <Button type="submit" className="bg-pink-500 hover:bg-pink-600" disabled={isSubmitting}>
+          <Button type="submit" className="text-white bg-pink-500 hover:bg-pink-600" disabled={isSubmitting}>
             {isSubmitting ? (
               <span className="flex items-center gap-2">
                 <Loader2 className="h-4 w-4 animate-spin" />

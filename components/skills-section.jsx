@@ -27,11 +27,11 @@ export default function SkillsSection() {
   // Define skill categories
   const skillCategories = {
     "Frontend Development": ["React", "Next.js", "JavaScript", "TypeScript", "HTML", "CSS", "Tailwind CSS"],
-    "UI/UX & Design": ["Figma", "Responsive Design", "Animation", "Accessibility", "Design Systems"],
-    "Tools & Workflow": ["Git", "GitHub", "CI/CD", "Jest", "Testing Library", "Webpack", "Vite"],
+    "UI/UX & Design": ["Figma", "Responsive Web Design", "Animation", "Accessibility", "Design Systems"],
+    "Tools & Workflow": ["Git", "GitHub", "Docker", "Vercel","CI/CD", "Jest", "Testing Library", "Webpack", "Vite"],
     "State Management": ["Redux", "Context API", "Zustand", "Recoil"],
-    "Backend Knowledge": ["Node.js", "Express", "RESTful APIs", "GraphQL", "Firebase", "MongoDB"],
-    "Performance & SEO": ["Web Vitals", "Lighthouse", "Performance Optimization", "SEO"],
+    "Backend Knowledge": ["Node.js", "Express", "RESTful APIs", "GraphQL", "Firebase","Supabase", "MongoDB"],
+    "Performance & SEO": ["Web Vitals","Analytics", "Lighthouse", "Performance Optimization", "SEO"],
   }
 
   useEffect(() => {
