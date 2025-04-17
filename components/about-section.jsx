@@ -140,7 +140,7 @@ export default function AboutSection() {
                 <div className="absolute inset-0 rounded-full bg-gradient-to-r from-blue-300 via-[#ec4899] to-blue-500 opacity-20 blur-3xl" />
                 <div className="relative z-10 w-[400px] h-[400px] rounded-full border-2 border-blue-500/30 overflow-hidden">
                   <Image
-                    src="./placeholder.svg"
+                    src="https://pbs.twimg.com/profile_images/1890754622807019520/vsmubyFs_400x400.jpg"
                     alt="Hassana Abdullahi"
                     width={600}
                     height={600}

@@ -176,7 +176,7 @@ export default function HeroSection() {
 
               <div className="relative z-10 w-full h-full rounded-full border-2 border-blue-500/30 overflow-hidden">
                 <Image
-                  src="./placeholder.svg"
+                  src="./hassy1.JPEG"
                   alt="Hassana Abdullahi"
                   width={600}
                   height={600}
