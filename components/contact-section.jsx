@@ -1,5 +1,5 @@
 "use client"
-
+import emailjs from '@emailjs/browser';
 import { useState, useRef } from "react"
 import { motion, useInView } from "framer-motion"
 import { Mail, MapPin, Phone, DollarSign, Send, Coffee, Sparkles } from "lucide-react"
@@ -22,7 +22,7 @@ export default function ContactSection() {
   const handleSubmit = async (e) => {
     e.preventDefault()
     setIsSubmitting(true)
-
+  
     try {
       const formData = new FormData(e.target)
       const messageData = {
@@ -32,15 +32,28 @@ export default function ContactSection() {
         message: formData.get("message"),
         createdAt: serverTimestamp(),
       }
-
-      // Add the message to Firestore
+  
+      // 1. Add the message to Firestore
       await addDoc(collection(db, "messages"), messageData)
-
+  
+      // 2. Send email using EmailJS
+      await emailjs.send(
+        "service_73ydw0h",    
+        "template_5qvrfrq",   
+        {
+          from_name: messageData.name,
+          from_email: messageData.email,
+          subject: messageData.subject,
+          message: messageData.message,
+        },
+        "dpZxMv6bPvp0vzdZP"     
+      )
+  
       toast({
         title: "Message sent!",
         description: "Thank you for your message. I'll get back to you soon.",
       })
-
+  
       formRef.current.reset()
       setMessageSent(true)
     } catch (error) {
@@ -146,7 +159,7 @@ export default function ContactSection() {
                 <p className="mb-4">
                   Thanks for reaching out. I'll get back to you faster than a bank alert!
                 </p>
-                <Button onClick={() => setMessageSent(false)} className="bg-[#ec4899] hover:bg-[#ec4899]/90">
+                <Button onClick={() => setMessageSent(false)} className="text-white bg-[#ec4899] hover:bg-[#ec4899]/90">
                   Send Another Message
                 </Button>
               </motion.div>
@@ -206,7 +219,7 @@ export default function ContactSection() {
                 >
                   {isSubmitting ? (
                     <span className="flex items-center gap-2">
-                      <span className="animate-spin h-4 w-4 border-2 border-current border-t-transparent rounded-full"></span>
+                      <span className="animate-spin text-white h-4 w-4 border-2 border-current border-t-transparent rounded-full"></span>
                       Sending...
                     </span>
                   ) : (

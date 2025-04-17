@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState,useEffect } from "react";
 import { motion, useInView } from "framer-motion";
 import { Coffee, Code, Lightbulb } from "lucide-react";
 import Image from "next/image";
@@ -8,7 +8,16 @@ import Image from "next/image";
 export default function AboutSection() {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, amount: 0.3 });
+  const [floatingPositions, setFloatingPositions] = useState([]);
 
+  useEffect(() => {
+    const generateRandomPositions = () =>
+      new Array(5).fill(null).map(() => ({
+        top: `${Math.random() * 90}%`,
+        left: `${Math.random() * 90}%`,
+      }));
+    setFloatingPositions(generateRandomPositions());
+  }, []);
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -142,29 +151,29 @@ export default function AboutSection() {
 
                 {/* Decorative Floating Elements - hidden on small screens */}
                 <div className="hidden md:block">
-                  {[...Array(5)].map((_, i) => (
-                    <motion.div
-                      key={i}
-                      className={`absolute w-20 h-20 rounded-full ${
-                        i % 2 === 0 ? "bg-blue-500/10" : "bg-[#ec4899]/10"
-                      }`}
-                      style={{
-                        top: `${Math.random() * 100}%`,
-                        left: `${Math.random() * 100}%`,
-                      }}
-                      animate={{
-                        x: [0, 30, 0],
-                        y: [0, 30, 0],
-                        opacity: [0.4, 0.8, 0.4],
-                      }}
-                      transition={{
-                        duration: 5 + i,
-                        repeat: Infinity,
-                        delay: i,
-                      }}
-                    />
-                  ))}
-                </div>
+            {floatingPositions.map((pos, i) => (
+              <motion.div
+                key={i}
+                className={`absolute w-20 h-20 rounded-full ${
+                  i % 2 === 0 ? "bg-blue-500/10" : "bg-[#ec4899]/10"
+                }`}
+                style={{
+                  top: pos.top,
+                  left: pos.left,
+                }}
+                animate={{
+                  x: [0, 30, 0],
+                  y: [0, 30, 0],
+                  opacity: [0.4, 0.8, 0.4],
+                }}
+                transition={{
+                  duration: 5 + i,
+                  repeat: Infinity,
+                  delay: i,
+                }}
+              />
+            ))}
+          </div>
               </div>
             </motion.div>
           </div>

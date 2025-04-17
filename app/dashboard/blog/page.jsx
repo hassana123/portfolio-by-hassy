@@ -416,29 +416,37 @@ export default function BlogPage() {
 )}
 
       {/* Delete Confirmation Dialog */}
-      <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>Confirm Deletion</DialogTitle>
-          </DialogHeader>
-          <p>Are you sure you want to delete the article "{currentPost?.title}"? This action cannot be undone.</p>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsDeleteDialogOpen(false)}>
-              Cancel
-            </Button>
-            <Button variant="destructive" onClick={handleDeleteConfirm} disabled={isSubmitting}>
-              {isSubmitting ? (
-                <span className="flex items-center gap-2">
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  Deleting...
-                </span>
-              ) : (
-                "Delete"
-              )}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      {isDeleteDialogOpen && (
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+    <div className="bg-white rounded-lg shadow-lg w-full max-w-md p-6">
+      <h2 className="text-xl font-bold mb-4">Confirm Deletion</h2>
+      <p className="text-foreground/80 mb-6">
+        Are you sure you want to delete the article <strong>"{currentPost?.title}"</strong>? This action cannot be undone.
+      </p>
+      <div className="flex justify-end space-x-2">
+        <Button variant="outline" onClick={() => setIsDeleteDialogOpen(false)}>
+          Cancel
+        </Button>
+        <Button
+          variant="destructive"
+          className="bg-red-600 text-white hover:bg-destructive/90"
+          onClick={handleDeleteConfirm}
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? (
+            <span className="flex items-center gap-2">
+              <Loader2 className="h-4 w-4 animate-spin" />
+              Deleting...
+            </span>
+          ) : (
+            "Delete"
+          )}
+        </Button>
+      </div>
+    </div>
+  </div>
+)}
+
     </div>
   )
 }

@@ -100,13 +100,13 @@ export default function DashboardPage() {
           <p className="text-foreground/70">Welcome back, {user?.displayName || user?.email || "Admin"}!</p>
         </div>
         <div className="mt-4 md:mt-0 space-x-2">
-          <Button asChild variant="outline" size="sm">
-            <a href="/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1">
+          <Button asChild variant="outline" size="sm" >
+            <a href="/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 py-2">
               <Eye className="h-4 w-4" />
               View Site
             </a>
           </Button>
-          <Button asChild size="sm" className="bg-pink-500 hover:bg-pink-600">
+          <Button asChild size="sm" className="text-white bg-pink-500 hover:bg-pink-600 py-2">
             <a href="/dashboard/profile" className="flex items-center gap-1">
               <Edit3 className="h-4 w-4" />
               Edit Profile
@@ -202,7 +202,7 @@ export default function DashboardPage() {
                 ) : (
                   <div className="text-center py-6">
                     <p className="text-foreground/70">No projects yet. Add your first project!</p>
-                    <Button asChild className="mt-4 bg-pink-500 hover:bg-pink-600">
+                    <Button asChild className="mt-4 text-white bg-pink-500 hover:bg-pink-600">
                       <a href="/dashboard/projects">Add Project</a>
                     </Button>
                   </div>
