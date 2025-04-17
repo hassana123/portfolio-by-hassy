@@ -108,15 +108,19 @@ export default function HeroSection() {
             </p>
 
             <div className="flex flex-wrap gap-4 mb-8">
-              <Button
-                className="bg-primary text-white hover:bg-primary/90 bounce-on-hover"
-                onClick={(e) => {
-                  e.preventDefault()
-                  scrollToSection("projects")
-                }}
-              >
-               Download CV
-              </Button>
+            <Button
+  className="bg-primary text-white hover:bg-primary/90 bounce-on-hover"
+  onClick={() => {
+    const link = document.createElement("a")
+    link.href = "./resume_hassana_abdullahi.pdf"
+    link.download = "resume_hassana_abdullahi.pdf"
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+  }}
+>
+  Download CV
+</Button>
               <Button
                 variant="outline"
                 className="border-[#ec489950] hover:border-[#ec4899] hover:bg-[#ec489910] bounce-on-hover"
