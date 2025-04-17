@@ -69,7 +69,7 @@ console.log(projects);
           <div className="max-w-6xl mx-auto">
             <div className="flex items-center justify-center mb-12">
               <div className="h-px w-12 bg-primary mr-4"></div>
-              <h2 className="text-3xl font-bold">
+              <h2 className="text-2xl font-bold">
                 Featured <span className="pink-gradient-text">Projects</span>
               </h2>
               <div className="h-px w-12 bg-primary ml-4"></div>

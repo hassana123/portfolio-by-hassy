@@ -8,13 +8,13 @@ const inter = Inter({ subsets: ["latin"] })
 export const metadata = {
   title: "Hassana Abdullahi | Front End Developer",
   description: "Personal portfolio and blog by Hassana Abdullahi",
-    generator: 'v0.dev'
+    generator: 'Hassy'
 }
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body suppressHydrationWarning  className={inter.className}>
+      <body suppressHydrationWarning  className={`${inter.className}`}>
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
         <AuthProvider>
           {children}

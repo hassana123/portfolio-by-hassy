@@ -56,12 +56,12 @@ export default function ContactSection() {
   }
 
   return (
-    <section id="contact" className="py-20">
-    <div className="container mx-auto px-4">
+    <section id="contact" className="py-10 overflow-x-hidden">
+    <div className="container mx-auto px-4 max-w-full overflow-x-hidden">
       <div className="max-w-6xl mx-auto">
         <div className="flex items-center justify-center mb-12">
           <div className="h-px w-12 bg-primary mr-4"></div>
-          <h2 className="text-3xl font-bold">
+          <h2 className="text-2xl font-bold">
             Get In <span className="pink-gradient-text">Touch</span>
           </h2>
           <div className="h-px w-12 bg-primary ml-4"></div>
@@ -86,7 +86,7 @@ export default function ContactSection() {
                     href="mailto:hello@hassana.dev"
                     className="text-foreground/70 hover:text-[#ec4899] transition-colors"
                   >
-                    hello@hassana.dev
+                   hassanaabdll1@gmail.com
                   </a>
                 </div>
               </div>
@@ -98,7 +98,7 @@ export default function ContactSection() {
                 <div>
                   <h4 className="text-base font-medium mb-1">Phone</h4>
                   <a href="tel:+123456789" className="text-foreground/70 hover:text-[#ec4899] transition-colors">
-                    +1 (234) 567-89
+                    08060618637
                   </a>
                 </div>
               </div>
@@ -109,7 +109,7 @@ export default function ContactSection() {
                 </div>
                 <div>
                   <h4 className="text-base font-medium mb-1">Location</h4>
-                  <p className="text-foreground/70">Your City, Country</p>
+                  <p className="text-foreground/70">Kano, Nigeria</p>
                 </div>
               </div>
             </div>

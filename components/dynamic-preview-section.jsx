@@ -29,7 +29,7 @@ export default function DynamicPreviewSection() {
   }
 
   return (
-    <section className="py-20 bg-gradient-to-b from-blue-50 to-white dark:from-blue-950/20 dark:to-background">
+    <section className="py-10 bg-gradient-to-b from-blue-50 to-white dark:from-blue-950/20 dark:to-background overflow-hidden">
       <div className="container mx-auto px-4">
         <motion.div
           ref={ref}
@@ -39,7 +39,7 @@ export default function DynamicPreviewSection() {
           className="max-w-6xl mx-auto"
         >
           <motion.div variants={itemVariants} className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+            <h2 className="text-2xl md:text-4xl font-bold mb-4">
               Fully <span className="text-primary">Customizable</span> Portfolio
             </h2>
             <p className="text-foreground/70 max-w-2xl mx-auto">
@@ -49,41 +49,41 @@ export default function DynamicPreviewSection() {
           </motion.div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-  <motion.div variants={itemVariants} className="space-y-6">
-    <div className="flex items-start gap-4">
-      <div className="bg-primary/10 rounded-full p-2 mt-1">
-        <Check className="h-5 w-5 text-primary" />
-      </div>
-      <div>
-        <h3 className="text-xl font-semibold mb-2">A Portfolio That Grows With You</h3>
-        <p className="text-foreground/70 max-w-2xl">
-          Imagine a portfolio that evolves as you do — no more digging through code just to update one project or skill.
-          This setup lets you manage your content from a sleek dashboard, so you can focus on what you actually enjoy: building cool stuff.
-        </p>
-      </div>
-    </div>
+            <motion.div variants={itemVariants} className="space-y-6">
+              <div className="flex items-start gap-4">
+                <div className="bg-primary/10 rounded-full p-2 mt-1">
+                  <Check className="h-5 w-5 text-primary" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-semibold mb-2">A Portfolio That Grows With You</h3>
+                  <p className="text-foreground/70 max-w-2xl">
+                    Imagine a portfolio that evolves as you do — no more digging through code just to update one project or skill.
+                    This setup lets you manage your content from a sleek dashboard, so you can focus on what you actually enjoy: building cool stuff.
+                  </p>
+                </div>
+              </div>
 
-    <div className="flex items-start gap-4">
-      <div className="bg-primary/10 rounded-full p-2 mt-1">
-        <MessageSquare className="h-5 w-5 text-primary" />
-      </div>
-      <div>
-        <p className="text-foreground/70 max-w-2xl">
-          If you want something this smooth, dynamic, and unapologetically tailored to you, slide into my inbox.
-          Let’s build your dream portfolio — the one that works as hard as you do.
-        </p>
-      </div>
-    </div>
+              <div className="flex items-start gap-4">
+                <div className="bg-primary/10 rounded-full p-2 mt-1">
+                  <MessageSquare className="h-5 w-5 text-primary" />
+                </div>
+                <div>
+                  <p className="text-foreground/70 max-w-2xl">
+                    If you want something this smooth, dynamic, and unapologetically tailored to you, slide into my inbox.
+                    Let us build your dream portfolio — the one that works as hard as you do.
+                  </p>
+                </div>
+              </div>
 
-    <div className="pt-4">
-      <Button asChild className="bg-primary hover:bg-primary/50 text-white">
-        <a href="#contact">Send Me a Message Now</a>
-      </Button>
-    </div>
-  </motion.div>
+              <div className="pt-4">
+                <Button asChild className="bg-primary hover:bg-primary/50 text-white">
+                  <a href="#contact">Send Me a Message Now</a>
+                </Button>
+              </div>
+            </motion.div>
 
-            <motion.div variants={itemVariants} className="relative">
-              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+            <motion.div variants={itemVariants} className="relative overflow-hidden max-w-full">
+              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden max-w-full">
                 <div className="flex items-center gap-1 px-4 py-2 bg-gray-100 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600">
                   <div className="w-3 h-3 rounded-full bg-red-500"></div>
                   <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
@@ -91,8 +91,8 @@ export default function DynamicPreviewSection() {
                   <div className="ml-2 text-xs text-gray-500 dark:text-gray-400">Dashboard / Projects</div>
                 </div>
                 <div className="p-4">
-                  <div className="flex mb-6">
-                    <div className="w-48 bg-gray-100 dark:bg-gray-700 p-4 rounded-lg mr-4">
+                  <div className="flex flex-col md:flex-row mb-6">
+                    <div className="w-full md:w-48 bg-gray-100 dark:bg-gray-700 p-4 rounded-lg md:mr-4 mb-4 md:mb-0">
                       <div className="flex items-center gap-2 mb-6 text-primary font-medium">
                         <LayoutDashboard className="h-5 w-5" />
                         <span>Dashboard</span>
@@ -142,7 +142,9 @@ export default function DynamicPreviewSection() {
                   </div>
                 </div>
               </div>
-              <div className="absolute -bottom-6 -right-6 -z-10 w-full h-full bg-gradient-to-br from-primary/20 to-blue-400/20 rounded-lg blur-lg"></div>
+
+              {/* Gradient background with controlled width */}
+              <div className="absolute -bottom-6 -right-6 -z-10 w-[120%] max-w-none h-full bg-gradient-to-br from-primary/20 to-blue-400/20 rounded-lg blur-lg"></div>
             </motion.div>
           </div>
         </motion.div>

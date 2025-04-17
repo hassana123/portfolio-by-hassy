@@ -132,12 +132,12 @@ export default function SkillsSection() {
   }
 
   return (
-    <section id="skills" className="py-20">
+    <section id="skills" className="py-10">
       <div className="container mx-auto px-4">
         <div className="max-w-6xl mx-auto">
           <div className="flex items-center justify-center mb-12">
             <div className="h-px w-12 bg-primary mr-4"></div>
-            <h2 className="text-3xl font-bold">
+            <h2 className="text-2xl font-bold">
               Skills <span className="pink-gradient-text">& Expertise</span>
             </h2>
             <div className="h-px w-12 bg-primary ml-4"></div>
