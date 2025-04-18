@@ -64,7 +64,7 @@ console.log(projects);
 
   if (loading) {
     return (
-      <section id="projects" className="py-20 bg-muted/30">
+      <section id="projects" className="py-10 bg-muted/30">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
             <div className="flex items-center justify-center mb-12">

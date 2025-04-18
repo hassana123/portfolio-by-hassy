@@ -209,17 +209,15 @@ export default function SkillsSection() {
             </div>
           )}
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-            transition={{ duration: 0.5, delay: 0.8 }}
+          {/* <motion.div
+        
             className="mt-16 text-center"
           >
-            <p className="text-foreground/70 max-w-2xl mx-auto mb-6">
+            <p className="text-foregroun max-w-2xl mx-auto mb-6">
               I'm constantly learning and expanding my skillset to stay up-to-date with the latest technologies and best
               practices in web development.
             </p>
-          </motion.div>
+          </motion.div> */}
         </div>
       </div>
     </section>
