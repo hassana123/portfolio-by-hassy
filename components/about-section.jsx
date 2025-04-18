@@ -107,7 +107,7 @@ export default function AboutSection() {
           </motion.div>
 
           {/* About Text + Image */}
-          <div className="grid md:grid-cols-2 items-center">
+          <div className="grid md:grid-cols-2 items-center w-[90%] md:w-full ">
             <motion.div variants={itemVariants} className="mt-10 max-w-6xl mx-auto">
               <p className="text-foreground/80 mb-4">
                 I am a frontend developer from Nigeria who enjoys building digital
@@ -138,7 +138,7 @@ export default function AboutSection() {
               <div className="relative mx-auto w-full max-w-md aspect-square">
                 {/* Gradient BG Circle */}
                 <div className="absolute inset-0 rounded-full bg-gradient-to-r from-blue-300 via-[#ec4899] to-blue-500 opacity-20 blur-3xl" />
-                <div className="relative z-10 w-[400px] h-[400px] rounded-full border-2 border-blue-500/30 overflow-hidden">
+                <div className="relative z-10  w-[300px] md:w-[400px] mx-auto  h-[300px] md:h-[400px] rounded-full border-2 border-blue-500/30 overflow-hidden">
                   <Image
                     src="https://pbs.twimg.com/profile_images/1890754622807019520/vsmubyFs_400x400.jpg"
                     alt="Hassana Abdullahi"
