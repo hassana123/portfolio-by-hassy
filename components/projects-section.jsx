@@ -5,7 +5,7 @@ import Image from "next/image"
 import { motion, useInView } from "framer-motion"
 import { ExternalLink, Github, Star, Heart } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { collection, getDocs } from "firebase/firestore"
+import { collection, getDocs, Timestamp } from "firebase/firestore"
 import { db } from "@/lib/firebase"
 
 export default function ProjectsSection() {
@@ -20,11 +20,68 @@ export default function ProjectsSection() {
       try {
         const projectsCollection = collection(db, "projects")
         const projectsSnapshot = await getDocs(projectsCollection)
-        const projectsList = projectsSnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }))
-        setProjects(projectsList)
+        const projectsList = projectsSnapshot.docs.map((doc) => {
+          const data = doc.data()
+          console.log(`Project ${doc.id}:`, data) // Debug log
+          
+          // Handle different timestamp formats
+          let timestamp = null
+          
+          // Check for createdAt field first (most common)
+          if (data.createdAt) {
+            if (data.createdAt instanceof Timestamp) {
+              timestamp = data.createdAt.toDate()
+            } else if (data.createdAt.toDate && typeof data.createdAt.toDate === 'function') {
+              timestamp = data.createdAt.toDate()
+            } else if (data.createdAt instanceof Date) {
+              timestamp = data.createdAt
+            } else {
+              timestamp = new Date(data.createdAt)
+            }
+          } else if (data.timestamp) {
+            if (data.timestamp instanceof Timestamp) {
+              timestamp = data.timestamp.toDate()
+            } else if (data.timestamp.toDate && typeof data.timestamp.toDate === 'function') {
+              timestamp = data.timestamp.toDate()
+            } else if (data.timestamp instanceof Date) {
+              timestamp = data.timestamp
+            } else {
+              timestamp = new Date(data.timestamp)
+            }
+          } else if (data.dateAdded) {
+            if (data.dateAdded instanceof Timestamp) {
+              timestamp = data.dateAdded.toDate()
+            } else if (data.dateAdded.toDate && typeof data.dateAdded.toDate === 'function') {
+              timestamp = data.dateAdded.toDate()
+            } else if (data.dateAdded instanceof Date) {
+              timestamp = data.dateAdded
+            } else {
+              timestamp = new Date(data.dateAdded)
+            }
+          } else {
+            // Fallback to document creation time
+            timestamp = doc.createTime?.toDate?.() || new Date()
+          }
+          
+          console.log(`Project ${doc.id} timestamp:`, timestamp) // Debug log
+          
+          return {
+            id: doc.id,
+            ...data,
+            timestamp: timestamp,
+          }
+        })
+        
+        // Sort projects by timestamp (most recent first)
+        const sortedProjects = projectsList.sort((a, b) => {
+          const dateA = a.timestamp
+          const dateB = b.timestamp
+          console.log(`Comparing ${a.title}: ${dateA} vs ${b.title}: ${dateB}`) // Debug log
+          return dateB - dateA
+        })
+        
+        console.log('Sorted projects:', sortedProjects.map(p => ({ title: p.title, timestamp: p.timestamp }))) // Debug log
+        setProjects(sortedProjects)
       } catch (error) {
         console.error("Error fetching projects:", error)
       } finally {
