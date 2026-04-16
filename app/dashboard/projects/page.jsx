@@ -13,8 +13,8 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Checkbox } from "@/components/ui/checkbox"
 import { collection, getDocs, doc, addDoc, updateDoc, deleteDoc, serverTimestamp } from "firebase/firestore"
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage"
-import { db, storage } from "@/lib/firebase"
+import { db } from "@/lib/firebase"
+import { uploadMedia } from "@/lib/cloudinary"
 
 
 export default function ProjectsPage() {
@@ -127,13 +127,9 @@ export default function ProjectsPage() {
     try {
       let imageUrl = currentProject?.image || null
 
-      // Upload image if a new one is selected
       if (formData.image) {
-        console.log(formData.image);
-        const imageName = formData.image.name ?? `image-${Date.now()}`; // fallback if name is undefined
-        const storageRef = ref(storage, `projects/${imageName}-${Date.now()}`);
-        await uploadBytes(storageRef, formData.image);
-        imageUrl = await getDownloadURL(storageRef);
+        const uploadResult = await uploadMedia(formData.image, "portfolio/projects")
+        imageUrl = uploadResult.secureUrl
       }
 
       const projectData = {

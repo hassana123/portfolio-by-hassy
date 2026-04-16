@@ -13,8 +13,8 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Checkbox } from "@/components/ui/checkbox"
 import { collection, getDocs, doc, addDoc, updateDoc, deleteDoc, serverTimestamp } from "firebase/firestore"
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage"
-import { db, storage } from "@/lib/firebase"
+import { db } from "@/lib/firebase"
+import { uploadMedia } from "@/lib/cloudinary"
 
 export default function BlogPage() {
   const [posts, setPosts] = useState([])
@@ -122,11 +122,9 @@ export default function BlogPage() {
     try {
       let imageUrl = currentPost?.coverImage || null
 
-      // Upload image if a new one is selected
       if (formData.coverImage) {
-        const storageRef = ref(storage, `blogPosts/${formData.coverImage.name}-${Date.now()}`)
-        await uploadBytes(storageRef, formData.coverImage)
-        imageUrl = await getDownloadURL(storageRef)
+        const uploadResult = await uploadMedia(formData.coverImage, "portfolio/blog")
+        imageUrl = uploadResult.secureUrl
       }
 
       const postData = {
