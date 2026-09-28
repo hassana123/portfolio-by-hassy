@@ -70,16 +70,14 @@ export async function finishUpload(
         "The uploaded content does not match the allowed file type or size.",
       );
     }
-    const { error: saveError } = await c
-      .from("media")
-      .insert({
-        id,
-        path,
-        name: safeName,
-        mime,
-        bytes: file.size,
-        alt: safeAlt,
-      });
+    const { error: saveError } = await c.from("media").insert({
+      id,
+      path,
+      name: safeName,
+      mime,
+      bytes: file.size,
+      alt: safeAlt,
+    });
     if (saveError) throw Error(saveError.message);
     revalidatePath("/admin");
     return {
@@ -138,6 +136,14 @@ export async function saveSettings(
   const c = await owner();
   try {
     const value = settingsSchema.parse(input);
+    if (
+      publish &&
+      value.aboutVideo &&
+      (!value.aboutPoster || !value.aboutVideoDescription.trim())
+    )
+      throw Error(
+        "Choose an About video poster and add a description before publishing.",
+      );
     if (
       publish &&
       ((value.portrait && !value.portraitAlt) ||

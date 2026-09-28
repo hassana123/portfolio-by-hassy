@@ -1,4 +1,140 @@
 @import "tailwindcss";
+
+/* About introduction: a full-frame landscape film, never an image crop. */
+.about-grid:has(.about-media) {
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  gap: clamp(32px, 7vw, 100px);
+}
+.about-media {
+  position: relative;
+  min-width: 0;
+  padding: 14px 5px 0;
+}
+.about-video-card {
+  border: 7px solid #fff;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 10px 12px 0 #b9a7f73d;
+  transform: rotate(-1.25deg);
+  overflow: hidden;
+}
+.about-video-frame {
+  position: relative;
+  aspect-ratio: 16/9;
+  width: 100%;
+  background: var(--paper);
+  overflow: hidden;
+  border-radius: 7px;
+}
+.about-video-frame video,
+.about-video-frame .about-video-still {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: contain;
+  object-position: center;
+}
+.about-video-concealed {
+  visibility: hidden;
+}
+.about-video-empty {
+  height: 100%;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  color: var(--ink);
+  font-size: 12px;
+  text-align: center;
+}
+.about-video-toolbar {
+  min-height: 46px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 5px 3px 0;
+  color: var(--ink);
+}
+.about-video-status {
+  font-size: 10px;
+  line-height: 1.5;
+  max-width: 34ch;
+}
+.about-video-control {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  margin-left: auto;
+  min-width: 80px;
+  min-height: 38px;
+  background: var(--paper);
+  border: 1px solid #17152c20;
+  border-radius: 99px;
+  font-size: 11px;
+  padding: 6px 12px;
+}
+.about-video-control:hover {
+  background: #eee8fb;
+}
+.about-video-control:focus-visible {
+  outline: 3px solid #7960ca;
+  outline-offset: 2px;
+}
+.about-media > .handwritten {
+  margin: 22px 0 0 8px;
+  transform: rotate(-4deg);
+  font-size: clamp(38px, 4vw, 52px);
+}
+.about-media > .collage-star {
+  top: -37px;
+  right: -8px;
+  font-size: 64px;
+  pointer-events: none;
+  z-index: 1;
+}
+@media (max-width: 700px) {
+  .about-grid:has(.about-media) {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 44px;
+  }
+  .about-media {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 8px 0 0;
+  }
+  .about-video-card {
+    transform: none;
+    border-width: 6px;
+    box-shadow: 7px 9px 0 #b9a7f73d;
+  }
+  .about-media > .collage-star {
+    font-size: 45px;
+    top: -25px;
+    right: -5px;
+  }
+  .about-media > .handwritten {
+    margin-top: 20px;
+  }
+  .about-video-control {
+    min-height: 44px;
+  }
+  .about-video-status {
+    font-size: 9px;
+  }
+  .about-video-toolbar {
+    gap: 6px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .about-video-card {
+    transform: none;
+  }
+}
 :root {
   --ink: #17152c;
   --paper: #faf8f4;

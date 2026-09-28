@@ -1,5 +1,6 @@
 import { owner, configured } from "@/lib/supabase";
 import { demoSettings, demoRecords } from "@/lib/demo";
+import { settingsSchema } from "@/lib/model";
 import Dashboard from "@/components/admin/dashboard";
 import { notFound, redirect } from "next/navigation";
 export const dynamic = "force-dynamic";
@@ -68,14 +69,16 @@ export default async function Admin({
   return (
     <Dashboard
       demo={false}
-      initialSettings={
+      initialSettings={settingsSchema.parse(
         data.settings || {
           ...demoSettings,
           portrait: "",
           aboutImage: "",
           collageImage: "",
-        }
-      }
+          aboutVideo: "",
+          aboutPoster: "",
+        },
+      )}
       initialRecords={data.records || []}
       messages={messages || []}
       media={media || []}

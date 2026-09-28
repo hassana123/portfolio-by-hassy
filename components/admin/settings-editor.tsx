@@ -347,28 +347,41 @@ export default function SettingsEditor({
             onChange={(v) => update("portraitAlt", v)}
           />
           <AssetField
-            label="About photo"
+            label="About image fallback"
             value={s.aboutImage}
             onChange={(v) => update("aboutImage", v)}
             media={media}
           />
           <Field
-            label="About photo alt text"
+            label="About fallback image alt text"
             value={s.aboutAlt}
             onChange={(v) => update("aboutAlt", v)}
           />
           <AssetField
-            label="Second collage image"
-            value={s.collageImage}
-            onChange={(v) => update("collageImage", v)}
+            label="About introduction video (silent MP4)"
+            value={s.aboutVideo}
+            onChange={(v) => update("aboutVideo", v)}
+            media={media}
+            videos
+          />
+          <AssetField
+            label="About video poster"
+            value={s.aboutPoster}
+            onChange={(v) => update("aboutPoster", v)}
             media={media}
           />
           <Field
-            label="Second collage image alt text"
-            value={s.collageAlt}
-            onChange={(v) => update("collageAlt", v)}
+            label="About video / poster description"
+            value={s.aboutVideoDescription}
+            onChange={(v) => update("aboutVideoDescription", v)}
           />
         </div>
+        <p className="admin-note">
+          The About card preserves the entire 16:9 frame and plays once, muted.
+          Upload the optimised MP4 and its poster through Media, then select
+          them here. Save draft and preview before publishing. Clear the video
+          to show the still image instead.
+        </p>
         <h2>Social links</h2>
         {s.socials.map((x, i) => (
           <div className="block-editor" key={i}>

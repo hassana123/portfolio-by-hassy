@@ -24,6 +24,47 @@ test("Postgres publication, role visibility, private drafts, RLS, media and seed
       return r.rows[0].value;
     };
     await call("save_site", [JSON.stringify(demoSettings), true]);
+    const aboutMedia = [
+      "20000000-0000-4000-8000-000000000002",
+      "20000000-0000-4000-8000-000000000003",
+    ];
+    for (const [index, assetId] of aboutMedia.entries()) {
+      await pg.query(
+        "insert into media(id,path,name,mime,bytes) values($1,$2,$3,$4,$5)",
+        [
+          assetId,
+          `about-${index}`,
+          `about-${index}`,
+          index ? "image/jpeg" : "video/mp4",
+          100,
+        ],
+      );
+    }
+    const videoSettings = {
+      ...demoSettings,
+      aboutVideo: `/api/media/${aboutMedia[0]}`,
+      aboutPoster: `/api/media/${aboutMedia[1]}`,
+    };
+    await call("save_site", [JSON.stringify(videoSettings), false]);
+    for (const assetId of aboutMedia)
+      assert.equal(
+        (await pg.query("select * from public_media($1)", [assetId])).rows
+          .length,
+        0,
+      );
+    await call("save_site", [JSON.stringify(videoSettings), true]);
+    await call("save_site", [JSON.stringify(demoSettings), false]);
+    assert.equal(
+      (await call("public_snapshot")).settings.aboutVideo,
+      videoSettings.aboutVideo,
+    );
+    for (const assetId of aboutMedia)
+      assert.equal(
+        (await pg.query("select * from public_media($1)", [assetId])).rows
+          .length,
+        1,
+      );
+    await call("save_site", [JSON.stringify(demoSettings), true]);
     const mediaId = "20000000-0000-4000-8000-000000000001";
     await pg.query(
       "insert into media(id,path,name,mime,bytes) values($1,$2,$3,$4,$5)",

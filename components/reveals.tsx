@@ -4,7 +4,7 @@ export default function Reveals() {
   useEffect(() => {
     if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const nodes = document.querySelectorAll(
-      ".section-heading, .about-copy, .collage, .service, .article-card, .timeline article",
+      ".section-heading, .about-copy, .about-media, .service, .article-card, .timeline article",
     );
     const observer = new IntersectionObserver(
       (entries) => {

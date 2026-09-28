@@ -64,12 +64,14 @@ export function AssetField({
   onChange,
   media,
   documents = false,
+  videos = false,
 }: {
   label: string;
   value: string;
   onChange: (v: string) => void;
   media: MediaItem[];
   documents?: boolean;
+  videos?: boolean;
 }) {
   return (
     <label className="admin-field">
@@ -83,7 +85,9 @@ export function AssetField({
           .filter((m) =>
             documents
               ? m.mime === "application/pdf"
-              : m.mime.startsWith("image/"),
+              : videos
+                ? m.mime === "video/mp4"
+                : m.mime.startsWith("image/"),
           )
           .map((m) => (
             <option key={m.id} value={`/api/media/${m.id}`}>

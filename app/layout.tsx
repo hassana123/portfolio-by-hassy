@@ -20,7 +20,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           rel="stylesheet"
         />
       </head>
-      <body>
+      {/* Browser extensions can add body attributes before React hydrates.
+          Suppression is scoped to this element; child mismatches still warn. */}
+      <body suppressHydrationWarning>
         <a className="skip" href="#main">
           Skip to content
         </a>

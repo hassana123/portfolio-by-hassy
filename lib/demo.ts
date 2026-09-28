@@ -47,6 +47,10 @@ export const demoSettings: Settings = {
   portraitAlt: "Hassana Abdullahi",
   aboutImage: "/demo/about.jpg",
   aboutAlt: "Hassana Abdullahi",
+  aboutVideo: "/demo/about-hello.mp4",
+  aboutPoster: "/demo/about-hello-poster.jpg",
+  aboutVideoDescription:
+    "Hassana typing on her laptop, then turning to smile and wave hello.",
   collageImage: "/demo/portrait.jpg",
   collageAlt: "Hassana's illustrated avatar from her original portfolio",
   availability: "Open to meaningful collaborations",

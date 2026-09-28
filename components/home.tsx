@@ -10,6 +10,7 @@ import { sectionVisible, type Section, type Kind } from "@/lib/model";
 import { Hero, Navigation, ToolStrip, ContactForm } from "./interactive";
 import { PinnedGallery as Gallery } from "./pinned-gallery";
 import Reveals from "./reveals";
+import AboutVideo from "./about-video";
 export type Portfolio = Awaited<ReturnType<typeof portfolio>>;
 export function Home({ data }: { data: Portfolio }) {
   const { settings: s, mode, records, demo, preview } = data,
@@ -136,36 +137,16 @@ export function Home({ data }: { data: Portfolio }) {
               <div className="wrap">
                 {section.template === "about" ? (
                   <div className="about-grid">
-                    <div className="collage">
-                      <div className="photo-main">
-                        {s.aboutImage ? (
-                          <img
-                            src={s.aboutImage}
-                            alt={s.aboutAlt}
-                            width="540"
-                            height="640"
-                            loading="lazy"
-                          />
-                        ) : (
-                          <div className="photo-placeholder">
-                            Your photo here
-                          </div>
-                        )}
-                      </div>
-                      <div className="photo-small">
-                        {s.collageImage && (
-                          <img
-                            src={s.collageImage}
-                            alt={s.collageAlt}
-                            width="420"
-                            height="300"
-                            loading="lazy"
-                          />
-                        )}
-                        <span className="desk-caption">
-                          {s.labels.collageNote}
-                        </span>
-                      </div>
+                    <div className="about-media">
+                      <AboutVideo
+                        key={`${s.aboutVideo}:${s.aboutPoster}:${s.aboutImage}`}
+                        video={s.aboutVideo}
+                        poster={s.aboutPoster}
+                        image={s.aboutImage}
+                        description={
+                          s.aboutVideo ? s.aboutVideoDescription : s.aboutAlt
+                        }
+                      />
                       <span className="handwritten">{s.labels.greeting}</span>
                       <span className="collage-star" aria-hidden="true">
                         ✳

@@ -183,6 +183,12 @@ export const settingsSchema = z
     portraitAlt: z.string().max(300),
     aboutImage: asset,
     aboutAlt: z.string().max(300),
+    aboutVideo: asset.default(""),
+    aboutPoster: asset.default(""),
+    aboutVideoDescription: z
+      .string()
+      .max(300)
+      .default("A woman typing on a laptop, then smiling and waving hello."),
     collageImage: asset.default(""),
     collageAlt: z.string().max(300).default(""),
     availability: z.string().max(100),
