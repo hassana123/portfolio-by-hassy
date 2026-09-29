@@ -58,7 +58,11 @@ export const demoSettings: Settings = {
     "A curious mind, a love for thoughtful details, and always something new to learn. Sample personal copy — edit before publishing.",
   handle: "",
   email: "",
-  socials: [],
+  socials: [
+    { label: "LinkedIn", url: "https://www.linkedin.com/in/hassana-abdullahi-858040240/" },
+    { label: "GitHub", url: "https://github.com/hassana123" },
+    { label: "X", url: "https://x.com/techSultana" },
+  ],
   profiles: {
     combined: profile(
       "Front End Engineer & Data Analyst",

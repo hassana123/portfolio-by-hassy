@@ -26,6 +26,7 @@ export function Hero({
   const p = s.profiles[mode];
   const [flipped, flip] = useState(false);
   const [paused, pause] = useState(false);
+  const [userFlipped, setUserFlipped] = useState(false);
   const [focus, setFocus] = useState(false);
   const [hovered, setHovered] = useState(false);
   const [tick, reset] = useState(0);
@@ -36,11 +37,13 @@ export function Hero({
   )?.url;
   const nameParts = s.name.trim().split(/\s+/);
   const toggleCard = () => {
+    setUserFlipped(true);
+    pause(true);
     flip((x) => !x);
     reset((x) => x + 1);
   };
   useEffect(() => {
-    if (reduced || paused || focus || hovered) return;
+    if (reduced || paused || focus || hovered || flipped || userFlipped) return;
     let interval: ReturnType<typeof setInterval>;
     const first = setTimeout(
       () => {
@@ -55,7 +58,7 @@ export function Hero({
       clearTimeout(first);
       clearInterval(interval);
     };
-  }, [reduced, paused, focus, hovered, tick]);
+  }, [reduced, paused, focus, hovered, tick, flipped, userFlipped]);
   useEffect(() => {
     if (reduced || paused) return;
     const id = setInterval(() => {
@@ -133,8 +136,8 @@ export function Hero({
                 {s.availability}
               </span>
             )}
-            <BadgeSocials socials={s.socials} />
             <div className="badge-front-footer">
+              <BadgeSocials socials={s.socials} />
               <span className="signature" aria-hidden="true">
                 {s.signature}
               </span>
