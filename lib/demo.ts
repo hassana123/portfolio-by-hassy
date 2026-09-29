@@ -62,7 +62,7 @@ export const demoSettings: Settings = {
   profiles: {
     combined: profile(
       "Front End Engineer & Data Analyst",
-      ["ENGINEER", "ANALYST", "TUTOR", "BUILDER"],
+      ["ENGINEER", "ANALYST", "EXPLORER", "BUILDER"],
       "Thoughtful interfaces. Meaningful insights.",
       "I bring ideas to life on the web and find the stories in data. Two disciplines, one curious mind — making complex things feel simple.",
       [
@@ -73,7 +73,7 @@ export const demoSettings: Settings = {
     ),
     engineering: profile(
       "Front End Engineer",
-      ["ENGINEER", "CREATOR", "TUTOR", "BUILDER"],
+      ["ENGINEER", "CREATOR", "EXPLORER", "BUILDER"],
       "I build things people enjoy using.",
       "I turn ideas into thoughtful, accessible web experiences. Clean interfaces, considered details, and a little curiosity.",
       [
