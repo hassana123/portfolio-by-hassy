@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import type { Settings, Mode } from "@/lib/model";
 import { ArrowDown, ArrowUpRight, Pause, Play, Menu, X } from "lucide-react";
+import { BadgeSocials, BadgeConnect, badgeLinks } from "./badge-connect";
 export function useReduced() {
   const [reduced, set] = useState(true);
   useEffect(() => {
@@ -30,6 +31,14 @@ export function Hero({
   const [tick, reset] = useState(0);
   const [phrase, setPhrase] = useState(0);
   const reduced = useReduced();
+  const linkedin = badgeLinks(s.socials).find(
+    (x) => x.platform === "LinkedIn",
+  )?.url;
+  const nameParts = s.name.trim().split(/\s+/);
+  const toggleCard = () => {
+    flip((x) => !x);
+    reset((x) => x + 1);
+  };
   useEffect(() => {
     if (reduced || paused || focus || hovered) return;
     let interval: ReturnType<typeof setInterval>;
@@ -73,26 +82,33 @@ export function Hero({
           </div>
         ))}
       </div>
-      <div className="badge-rig">
+      <div
+        className="badge-rig original-badge"
+        onFocus={() => setFocus(true)}
+        onBlur={(e) => {
+          if (!e.currentTarget.contains(e.relatedTarget)) setFocus(false);
+        }}
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+      >
         <div className="lanyard" aria-hidden="true">
           <span>
             {s.brand} ✦ {s.brand} ✦
           </span>
         </div>
         <div className="clip" aria-hidden="true" />
-        <button
+        <div
           className={`badge ${flipped ? "flipped" : ""}`}
-          onClick={() => {
-            flip((x) => !x);
-            reset((x) => x + 1);
+          onClick={(e) => {
+            if ((e.target as Element).closest("a, button, dialog")) return;
+            toggleCard();
           }}
-          onFocus={() => setFocus(true)}
-          onBlur={() => setFocus(false)}
-          onMouseEnter={() => setHovered(true)}
-          onMouseLeave={() => setHovered(false)}
-          aria-label={`${flipped ? p.back.join(". ") : `${s.name}. ${p.title}. ${s.availability}`}. Show ${flipped ? "front" : "back"} of identity card`}
         >
-          <span className="badge-face badge-front" aria-hidden={flipped}>
+          <div
+            className="badge-face badge-front"
+            aria-hidden={flipped}
+            inert={flipped}
+          >
             <span className="badge-slot" />
             <span className="badge-meta">{s.labels.badgeTagline}</span>
             {s.portrait ? (
@@ -106,7 +122,10 @@ export function Hero({
             ) : (
               <span className="portrait-empty">Your portrait here</span>
             )}
-            <strong>{s.name}</strong>
+            <strong className="badge-name">
+              <span>{nameParts[0]}</span>
+              <span>{nameParts.slice(1).join(" ")}</span>
+            </strong>
             <span className="badge-title">{p.title}</span>
             {s.availability && (
               <span className="availability">
@@ -114,19 +133,18 @@ export function Hero({
                 {s.availability}
               </span>
             )}
-            <span className="signature">{s.signature}</span>
-            <span className="badge-bottom">
-              <span className="barcode" aria-hidden="true">
-                ┃│┃┃││┃│┃┃│┃│┃┃
+            <BadgeSocials socials={s.socials} />
+            <div className="badge-front-footer">
+              <span className="signature" aria-hidden="true">
+                {s.signature}
               </span>
-              <span>
-                {s.labels.idLabel}
-                <br />
-                {s.labels.flipHint}
-              </span>
-            </span>
-          </span>
-          <span className="badge-face badge-back" aria-hidden={!flipped}>
+            </div>
+          </div>
+          <div
+            className="badge-face badge-back"
+            aria-hidden={!flipped}
+            inert={!flipped}
+          >
             <span className="badge-slot" />
             <span className="eyebrow">{s.labels.backEyebrow}</span>
             <strong>{s.labels.backHeading}</strong>
@@ -136,10 +154,20 @@ export function Hero({
                 {x}
               </span>
             ))}
-            <span className="back-note">{s.personal.split(". ")[0]}</span>
-            <span className="signature">{s.signature}</span>
-            {s.handle && <span>{s.handle}</span>}
-          </span>
+            <div className="badge-back-footer">
+              {linkedin && (
+                <BadgeConnect url={linkedin} hold={() => pause(true)} />
+              )}
+            </div>
+          </div>
+        </div>
+        <button
+          type="button"
+          className="badge-flip-hint"
+          onClick={toggleCard}
+          aria-label={`Show ${flipped ? "front" : "back"} of identity card`}
+        >
+          Flip ↻
         </button>
       </div>
       <div className="hero-bottom">
