@@ -58,6 +58,9 @@
 .badge-social-links a:hover {
   opacity: 0.7;
 }
+.badge-icon-legacy {
+  display: none;
+}
 .badge-front-footer {
   display: flex;
   flex-direction: column;
