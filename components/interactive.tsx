@@ -29,8 +29,8 @@ export function Hero({
   const [userFlipped, setUserFlipped] = useState(false);
   const [focus, setFocus] = useState(false);
   const [hovered, setHovered] = useState(false);
-  const [tick, reset] = useState(0);
   const [phrase, setPhrase] = useState(0);
+  const [autoReturned, setAutoReturned] = useState(false);
   const reduced = useReduced();
   const linkedin = badgeLinks(s.socials).find(
     (x) => x.platform === "LinkedIn",
@@ -40,25 +40,25 @@ export function Hero({
     setUserFlipped(true);
     pause(true);
     flip((x) => !x);
-    reset((x) => x + 1);
   };
   useEffect(() => {
-    if (reduced || paused || focus || hovered || flipped || userFlipped) return;
-    let interval: ReturnType<typeof setInterval>;
-    const first = setTimeout(
+    if (reduced || paused || focus || hovered || userFlipped || autoReturned)
+      return;
+    const timer = setTimeout(
       () => {
-        if (!document.hidden) flip((x) => !x);
-        interval = setInterval(() => {
-          if (!document.hidden) flip((x) => !x);
-        }, 3600);
+        if (document.hidden) return;
+        if (flipped) {
+          flip(false);
+          setAutoReturned(true);
+          pause(true);
+        } else {
+          flip(true);
+        }
       },
-      tick ? 3600 : 3100,
+      flipped ? 3600 : 3100,
     );
-    return () => {
-      clearTimeout(first);
-      clearInterval(interval);
-    };
-  }, [reduced, paused, focus, hovered, tick, flipped, userFlipped]);
+    return () => clearTimeout(timer);
+  }, [reduced, paused, focus, hovered, userFlipped, autoReturned, flipped]);
   useEffect(() => {
     if (reduced || paused) return;
     const id = setInterval(() => {
