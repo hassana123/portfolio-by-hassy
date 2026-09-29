@@ -1,6 +1,6 @@
 "use client";
 import { useActionState } from "react";
-import { login } from "../actions";
+import { googleLogin, login } from "../actions";
 export default function LoginForm() {
   const [state, action, pending] = useActionState(login, {
     ok: false,
@@ -23,6 +23,15 @@ export default function LoginForm() {
       </label>
       <button className="button" disabled={pending}>
         {pending ? "Signing in…" : "Sign in"}
+      </button>
+      <button
+        className="button secondary"
+        type="submit"
+        formAction={googleLogin}
+        formNoValidate
+        disabled={pending}
+      >
+        Continue with Google
       </button>
       <p role="status">{state.message}</p>
     </form>

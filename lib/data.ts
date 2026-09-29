@@ -21,27 +21,29 @@ export const portfolio = cache(async function portfolio(
     settings = structuredClone(demoSettings);
     records = structuredClone(demoRecords);
   } else {
-    const client = preview ? await owner() : publicDb();
-    const { data, error } = await client.rpc(
-      preview ? "owner_snapshot" : "public_snapshot",
-    );
-    if (error)
-      throw new Error(
-        "Content could not be loaded. Check the database migration and configuration.",
+    try {
+      const client = preview ? await owner() : publicDb();
+      const { data, error } = await client.rpc(
+        preview ? "owner_snapshot" : "public_snapshot",
       );
-    const raw = data.settings;
-    if (!raw)
-      throw new Error("Initialize site settings in the owner dashboard.");
-    if (!preview) {
-      const active = raw.profiles[modeOf(raw)];
-      raw.profiles = { combined: active, engineering: active, data: active };
+      if (error || !data?.settings)
+        throw new Error("No published site settings.");
+      const raw = data.settings;
+      if (!preview) {
+        const active = raw.profiles[modeOf(raw)];
+        raw.profiles = { combined: active, engineering: active, data: active };
+      }
+      settings = settingsSchema.parse(raw);
+      records = (data.records || []).map((r: RecordItem) => ({
+        ...r,
+        draft: contentSchema.parse(preview ? r.draft : r.published),
+        published: r.published ? contentSchema.parse(r.published) : null,
+      }));
+    } catch (error) {
+      if (preview) throw error;
+      settings = structuredClone(demoSettings);
+      records = structuredClone(demoRecords);
     }
-    settings = settingsSchema.parse(raw);
-    records = (data.records || []).map((r: RecordItem) => ({
-      ...r,
-      draft: contentSchema.parse(preview ? r.draft : r.published),
-      published: r.published ? contentSchema.parse(r.published) : null,
-    }));
   }
   if (preview && override) {
     settings = {

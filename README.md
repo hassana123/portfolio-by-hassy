@@ -31,7 +31,7 @@ npm start
 
    Signing in alone never grants administration. Only the allow-listed UUID can administer the site, including via direct database requests.
 3. Copy `.env.example` to `.env.local`. Set the public project URL and anon key. Set the server-only service-role key for media streaming and contact persistence. Generate a long random `CONTACT_RATE_LIMIT_SECRET`. Never prefix either secret with `NEXT_PUBLIC_` or commit `.env.local`.
-4. Set `NEXT_PUBLIC_SITE_URL` to the canonical site origin. Add the site's URL to Supabase Auth's allowed site/redirect URLs. Restart Next.js after changing environment variables.
+4. Set `NEXT_PUBLIC_SITE_URL` to the canonical site origin. In Supabase Auth, enable Google under **Sign In / Providers**, add `${NEXT_PUBLIC_SITE_URL}/auth/callback` to the provider's redirect URLs, and add the site's URL to the allowed site URLs. The owner login page supports both password sign-in and **Continue with Google**; the OAuth callback still checks the `owners` table before allowing `/admin`. Restart Next.js after changing environment variables.
 5. Visit `/admin/login` and sign in. Start in **Settings** and save the draft. Review all three **Site modes** profiles, upload your own portraits in **Media**, and select them in Settings. Initial configured settings deliberately have no demo portrait selected.
 6. Use **Preview saved drafts** after saving. Select desktop/mobile and each role mode. Publish site settings when ready. Until the first publication, the public site displays its setup/error state; it does not silently substitute sample data for an empty database.
 7. Add your own records, or explicitly add optional sample drafts from Overview when the library is empty. Samples are labelled, removable and never automatically seeded. Publish selected records individually.
@@ -68,7 +68,7 @@ The revision schema is append-only through application actions; an authorized ow
 
 Deploy the repository to a Node-compatible Next.js host such as Vercel. Set all required environment variables on that host, apply the migration, register the owner and publish the site. Build command: `npm run build`; start command for self-hosting: `npm start`.
 
-No external deployment, Supabase project or email account was created by this build. No secrets were supplied. Connected authentication, real Storage transfers and actual email delivery still need end-to-end verification in your project.
+If Supabase is configured but has no published site snapshot yet, public routes intentionally fall back to the labelled demo content instead of showing an interruption page. Owner preview and admin routes still require a valid authenticated owner and real snapshot. No external deployment, Supabase project or email account was created by this build. No secrets were supplied. Connected authentication, real Storage transfers and actual email delivery still need end-to-end verification in your project.
 
 ## Verification
 
