@@ -27,7 +27,12 @@ export default function ContentEditor({
   busy: boolean;
   sample: boolean;
 }) {
-  const [c, set] = useState(initial),
+  // Older records were saved before downloadable project files were added.
+  // Normalize that optional field before the editor renders.
+  const [c, set] = useState<Content>(() => ({
+      ...initial,
+      downloads: initial.downloads ?? [],
+    })),
     [preview, setPreview] = useState(false);
   const update = <K extends keyof Content>(k: K, v: Content[K]) =>
     set((current) => ({ ...current, [k]: v }));
