@@ -8,8 +8,9 @@ import { Hero } from "../components/interactive";
 import { demoSettings } from "../lib/demo";
 
 const url = "https://www.linkedin.com/in/hassana-abdullahi-858040240/";
-test("Inline QR decodes to Hassana's configured LinkedIn URL at card sizes", async () => {
-  const svg = renderToStaticMarkup(<BadgeQr url={url} />);
+test("Inline QR decodes to the active CV URL at card sizes", async () => {
+  const cvUrl = "https://example.com/hassana-engineering-cv.pdf";
+  const svg = renderToStaticMarkup(<BadgeQr url={cvUrl} />);
   for (const width of [82, 92, 100, 164, 200]) {
     const { data, info } = await sharp(Buffer.from(svg))
       .resize(width, width)
@@ -18,7 +19,7 @@ test("Inline QR decodes to Hassana's configured LinkedIn URL at card sizes", asy
       .toBuffer({ resolveWithObject: true });
     assert.equal(
       jsQR(new Uint8ClampedArray(data), info.width, info.height)?.data,
-      url,
+      cvUrl,
     );
   }
 });
@@ -56,8 +57,16 @@ test("Restored card keeps separate name lines, original back rows and a single f
     assert.ok(!html.includes('class="badge-bottom"'));
     assert.match(html, /badge-back" aria-hidden="true" inert=""/);
     assert.match(html, /aria-label="Show back of identity card"/);
-    assert.match(html, /Scan to connect/);
-    assert.match(html, /LinkedIn profile \(new tab\)/);
+    assert.match(
+      renderToStaticMarkup(
+        <Hero
+          settings={demoSettings}
+          mode={mode}
+          cvUrl="/api/media/00000000-0000-4000-8000-000000000000"
+        />,
+      ),
+      /Scan to download CV/,
+    );
     assert.match(html, /GitHub profile \(new tab\)/);
     assert.ok(!html.includes("<dialog"));
     assert.ok(!html.includes("Connect ↗"));

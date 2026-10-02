@@ -74,6 +74,10 @@ export const asset = z
       /^\/demo\/[a-z0-9.-]+$/.test(v),
     "Select an uploaded media item",
   );
+const downloadSchema = z.object({
+  label: z.string().min(1).max(100),
+  file: asset,
+});
 export const blockSchema = z.object({
   heading: z.string().max(160),
   body: z.string().max(30000),
@@ -119,6 +123,7 @@ export const contentSchema = z.object({
   file: asset,
   video: asset.default(""),
   videoTitle: z.string().max(180).default(""),
+  downloads: z.array(downloadSchema).max(12).default([]),
 });
 export type Content = z.infer<typeof contentSchema>;
 export type RecordItem = {
@@ -301,6 +306,7 @@ export function blankContent(): Content {
     file: "",
     video: "",
     videoTitle: "",
+    downloads: [],
   };
 }
 export function contrast(a: string, b: string) {

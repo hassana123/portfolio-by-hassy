@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import type { Settings, Mode } from "@/lib/model";
 import { ArrowDown, ArrowUpRight, Pause, Play, Menu, X } from "lucide-react";
-import { BadgeSocials, BadgeConnect, badgeLinks } from "./badge-connect";
+import { BadgeSocials, BadgeConnect } from "./badge-connect";
 export function useReduced() {
   const [reduced, set] = useState(true);
   useEffect(() => {
@@ -14,14 +14,49 @@ export function useReduced() {
   }, []);
   return reduced;
 }
+function BadgePortrait({ src, alt }: { src: string; alt: string }) {
+  const localFallback = src.startsWith("/demo/") ? src : "/demo/about.jpg";
+  const [visibleSrc, setVisibleSrc] = useState(localFallback);
+
+  useEffect(() => {
+    const fallback = src.startsWith("/demo/") ? src : "/demo/about.jpg";
+    setVisibleSrc(fallback);
+    if (!src || src === fallback) return;
+    const preload = new Image();
+    preload.onload = () => setVisibleSrc(src);
+    preload.onerror = () => setVisibleSrc(fallback);
+    preload.src = src;
+    return () => {
+      preload.onload = null;
+      preload.onerror = null;
+    };
+  }, [src]);
+
+  return (
+    <img
+      className="badge-portrait"
+      src={visibleSrc}
+      alt={alt}
+      width="380"
+      height="380"
+      loading="eager"
+      fetchPriority="high"
+      decoding="async"
+    />
+  );
+}
 export function Hero({
   settings: s,
   mode,
   nextId = "contact",
+  cvUrl,
+  cvQrUrl,
 }: {
   settings: Settings;
   mode: Mode;
   nextId?: string;
+  cvUrl?: string;
+  cvQrUrl?: string;
 }) {
   const p = s.profiles[mode];
   const [flipped, flip] = useState(false);
@@ -32,9 +67,6 @@ export function Hero({
   const [phrase, setPhrase] = useState(0);
   const [autoReturned, setAutoReturned] = useState(false);
   const reduced = useReduced();
-  const linkedin = badgeLinks(s.socials).find(
-    (x) => x.platform === "LinkedIn",
-  )?.url;
   const nameParts = s.name.trim().split(/\s+/);
   const toggleCard = () => {
     setUserFlipped(true);
@@ -115,13 +147,7 @@ export function Hero({
             <span className="badge-slot" />
             <span className="badge-meta">{s.labels.badgeTagline}</span>
             {s.portrait ? (
-              <img
-                className="badge-portrait"
-                src={s.portrait}
-                alt={s.portraitAlt}
-                width="380"
-                height="380"
-              />
+              <BadgePortrait src={s.portrait} alt={s.portraitAlt} />
             ) : (
               <span className="portrait-empty">Your portrait here</span>
             )}
@@ -158,9 +184,11 @@ export function Hero({
               </span>
             ))}
             <div className="badge-back-footer">
-              {linkedin && (
-                <BadgeConnect url={linkedin} hold={() => pause(true)} />
-              )}
+              <BadgeConnect
+                url={cvUrl}
+                qrUrl={cvQrUrl}
+                hold={() => pause(true)}
+              />
             </div>
           </div>
         </div>

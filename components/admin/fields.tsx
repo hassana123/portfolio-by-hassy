@@ -62,41 +62,55 @@ export function AssetField({
   label,
   value,
   onChange,
+  onSelect,
   media,
   documents = false,
   videos = false,
+  downloadable = false,
 }: {
   label: string;
   value: string;
   onChange: (v: string) => void;
+  onSelect?: (value: string, item?: MediaItem) => void;
   media: MediaItem[];
   documents?: boolean;
   videos?: boolean;
+  downloadable?: boolean;
 }) {
+  const eligible = media.filter((m) =>
+    documents
+      ? m.mime === "application/pdf"
+      : videos
+        ? m.mime === "video/mp4"
+        : downloadable
+          ? !m.mime.startsWith("image/") && m.mime !== "video/mp4"
+        : m.mime.startsWith("image/"),
+  );
   return (
     <label className="admin-field">
       {label}
-      <select value={value} onChange={(e) => onChange(e.target.value)}>
+      <select
+        value={value}
+        onChange={(e) => {
+          const next = e.target.value;
+          const item = eligible.find((m) => `/api/media/${m.id}` === next);
+          if (onSelect) onSelect(next, item);
+          else onChange(next);
+        }}
+      >
         <option value="">None</option>
         {value.startsWith("/demo/") && (
           <option value={value}>Demo asset: {value}</option>
         )}
-        {media
-          .filter((m) =>
-            documents
-              ? m.mime === "application/pdf"
-              : videos
-                ? m.mime === "video/mp4"
-                : m.mime.startsWith("image/"),
-          )
-          .map((m) => (
-            <option key={m.id} value={`/api/media/${m.id}`}>
-              {m.name}
-            </option>
-          ))}
+        {eligible.map((m) => (
+          <option key={m.id} value={`/api/media/${m.id}`}>
+            {m.name}
+          </option>
+        ))}
       </select>
       <span className="admin-note">
-        Upload files in Media, then select them here.
+        Upload files in Media, then select them here. Stored alt text fills
+        automatically when available.
       </span>
     </label>
   );
@@ -162,6 +176,15 @@ export function Blocks({
             label="Image (optional)"
             value={b.image}
             onChange={(v) => update(i, "image", v)}
+            onSelect={(v, item) =>
+              onChange(
+                value.map((block, n) =>
+                  n === i
+                    ? { ...block, image: v, ...(item ? { alt: item.alt } : {}) }
+                    : block,
+                ),
+              )
+            }
             media={media}
           />
           <Field

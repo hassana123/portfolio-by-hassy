@@ -30,7 +30,7 @@ export default function ContentEditor({
   const [c, set] = useState(initial),
     [preview, setPreview] = useState(false);
   const update = <K extends keyof Content>(k: K, v: Content[K]) =>
-    set({ ...c, [k]: v });
+    set((current) => ({ ...current, [k]: v }));
   return (
     <div>
       <div className="admin-toolbar">
@@ -124,6 +124,13 @@ export default function ContentEditor({
               label="Cover image"
               value={c.cover}
               onChange={(v) => update("cover", v)}
+              onSelect={(v, item) =>
+                set((current) => ({
+                  ...current,
+                  cover: v,
+                  ...(item ? { alt: item.alt } : {}),
+                }))
+              }
               media={media}
             />
             <Field
@@ -245,9 +252,78 @@ export default function ContentEditor({
                 suitable for public sharing. Use a cover image and dashboard
                 link as a fallback.
               </p>
+              <h2>Downloadable project files</h2>
+              <p className="admin-note">
+                Upload datasets, workbooks and Power BI files in Media first,
+                then select them here. These appear as public download buttons
+                on the published project page.
+              </p>
+              {c.downloads.map((download, i) => (
+                <div className="block-editor" key={i}>
+                  <Field
+                    label="Download label"
+                    value={download.label}
+                    onChange={(v) =>
+                      update(
+                        "downloads",
+                        c.downloads.map((x, n) =>
+                          n === i ? { ...x, label: v } : x,
+                        ),
+                      )
+                    }
+                  />
+                  <AssetField
+                    label="File"
+                    downloadable
+                    value={download.file}
+                    onChange={(v) =>
+                      update(
+                        "downloads",
+                        c.downloads.map((x, n) =>
+                          n === i ? { ...x, file: v } : x,
+                        ),
+                      )
+                    }
+                    media={media}
+                  />
+                  <button
+                    type="button"
+                    className="admin-button danger"
+                    onClick={() =>
+                      update(
+                        "downloads",
+                        c.downloads.filter((_, n) => n !== i),
+                      )
+                    }
+                  >
+                    Remove file
+                  </button>
+                </div>
+              ))}
+              <button
+                type="button"
+                className="admin-button"
+                onClick={() =>
+                  update("downloads", [
+                    ...c.downloads,
+                    { label: "", file: "" },
+                  ])
+                }
+              >
+                + Add downloadable file
+              </button>
             </>
           )}
           <h2>Links</h2>
+          {kind === "project" && (
+            <p className="admin-note">
+              Project covers show a GitHub icon for a github.com link and a link
+              icon for your other URL, with any label. If you add several other
+              URLs, label the main one “Live site”, “Demo”, or “Dashboard” to
+              give it priority; otherwise the first is used. Publish this
+              project to update its public links.
+            </p>
+          )}
           {c.links.map((l, i) => (
             <div className="block-editor" key={i}>
               <Field

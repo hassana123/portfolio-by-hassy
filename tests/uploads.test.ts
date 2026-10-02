@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { byteRange, validSignature } from "../lib/uploads";
+import { byteRange, uploadMimeForFile, validSignature } from "../lib/uploads";
 test("File signatures reject renamed executable/HTML content", () => {
   assert.equal(
     validSignature(
@@ -30,4 +30,15 @@ test("Media byte ranges support seeking and reject invalid requests", () => {
   assert.equal(byteRange("bytes=30-10", 100), null);
   assert.equal(byteRange("bytes=0-2,4-6", 100), null);
   assert.equal(byteRange(null, 100), undefined);
+});
+test("Power BI and spreadsheet extensions normalize browser MIME types", () => {
+  assert.equal(uploadMimeForFile("report.pbix", ""), "application/octet-stream");
+  assert.equal(
+    uploadMimeForFile("template.pbit", "application/x-msdownload"),
+    "application/octet-stream",
+  );
+  assert.equal(
+    uploadMimeForFile("sales.xlsx", ""),
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  );
 });

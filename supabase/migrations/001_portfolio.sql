@@ -58,7 +58,7 @@ create function public.contact_limit(client_key text) returns boolean language p
 delete from contact_limits where window_start<now()-interval '1 day';
 insert into contact_limits(key,attempts,window_start) values(client_key,1,now()) on conflict(key) do update set attempts=case when contact_limits.window_start<now()-interval '1 hour' then 1 else contact_limits.attempts+1 end,window_start=case when contact_limits.window_start<now()-interval '1 hour' then now() else contact_limits.window_start end returning attempts into n;return n<=5;end $$;
 -- Media stays in a private bucket. Public media is streamed only if currently referenced by visible published data.
-insert into storage.buckets(id,name,public,file_size_limit,allowed_mime_types) values('portfolio','portfolio',false,26214400,array['image/jpeg','image/png','image/webp','application/pdf','video/mp4']);
+insert into storage.buckets(id,name,public,file_size_limit,allowed_mime_types) values('portfolio','portfolio',false,26214400,array['image/jpeg','image/png','image/webp','application/pdf','video/mp4','text/csv','application/vnd.ms-excel','application/vnd.openxmlformats-officedocument.spreadsheetml.sheet','application/zip','application/x-zip-compressed','application/octet-stream']);
 create policy owner_storage on storage.objects for all to authenticated using(bucket_id='portfolio' and public.is_owner()) with check(bucket_id='portfolio' and public.is_owner());
 create function public.public_media(media_id uuid) returns table(path text,mime text,name text) language plpgsql stable security definer set search_path=public as $$ declare snap jsonb;needle text;begin
 snap=public.public_snapshot();needle='/api/media/'||media_id::text;

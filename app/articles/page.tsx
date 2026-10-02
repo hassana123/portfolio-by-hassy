@@ -15,6 +15,23 @@ export default async function Articles() {
       <DetailNav brand={d.settings.brand} />
       <span className="eyebrow">THE NOTEBOOK</span>
       <h1>Ideas, lessons & little discoveries.</h1>
+      <div className="detail-links article-directory-actions" aria-label="Writing platforms">
+        <a
+          className="button"
+          href="https://techsulatana.hashnode.dev/"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Read all on Hashnode ↗
+        </a>
+        <span
+          className="button button-disabled"
+          aria-disabled="true"
+          title="A Medium profile has not been created yet"
+        >
+          Medium coming soon
+        </span>
+      </div>
       {articles.length ? (
         <div className="listing">
           {articles.map((r) => (

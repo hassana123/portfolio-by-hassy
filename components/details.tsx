@@ -102,6 +102,24 @@ export function ContentDetail({
             />
           </section>
         )}
+      {c.downloads.length > 0 && (
+        <section className="prose project-downloads">
+          <h2>Project files</h2>
+          <p>Download the supporting dataset, workbook or Power BI file.</p>
+          <div className="detail-links">
+            {c.downloads.map((download) => (
+              <a
+                key={download.file}
+                className="button"
+                href={download.file}
+                download
+              >
+                {download.label} ↓
+              </a>
+            ))}
+          </div>
+        </section>
+      )}
       <div className="detail-links">
         {c.links
           .filter((l) => safeUrl.safeParse(l.url).success)

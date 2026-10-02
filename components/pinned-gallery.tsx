@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import type { Content } from "@/lib/model";
 import { ArrowLeft, ArrowRight, ArrowUpRight } from "lucide-react";
 import { useReduced } from "./interactive";
+import ProjectCover from "./project-cover";
 export function PinnedGallery({
   items,
   id,
@@ -15,91 +16,103 @@ export function PinnedGallery({
   const track = useRef<HTMLDivElement>(null),
     root = useRef<HTMLDivElement>(null);
   const [progress, setProgress] = useState(0);
+  const [canSlide, setCanSlide] = useState(false);
   const reduced = useReduced();
-  const pin = useRef<{ section: HTMLElement; distance: number } | null>(null);
+  const paused = useRef(false);
+  const autoTimer = useRef<number | null>(null);
+  const advanceRef = useRef<(n: number, wrap?: boolean) => void>(() => {});
   useEffect(() => {
-    const t = track.current,
-      section = root.current?.closest("section"),
-      wrap = section?.querySelector<HTMLElement>(".wrap");
-    if (!t || !section || !wrap) return;
-    const mq = matchMedia("(min-width: 1024px)");
+    const t = track.current;
+    if (!t) return;
     const update = () => {
       const max = t.scrollWidth - t.clientWidth;
-      if (pin.current) {
-        const y = -section.getBoundingClientRect().top;
-        const p = Math.min(1, Math.max(0, y / Math.max(max, 1)));
-        t.scrollLeft = p * max;
-        setProgress(p);
-        t.querySelectorAll<HTMLElement>(".project-card").forEach((card) => {
-          const r = card.getBoundingClientRect(),
-            off = (r.left + r.width / 2 - innerWidth / 2) / innerWidth;
-          card.style.transform = `scale(${1 - Math.min(0.06, Math.abs(off) * 0.08)}) rotate(${off * 2}deg)`;
-        });
-      } else setProgress(max > 0 ? t.scrollLeft / max : 1);
+      setProgress(max > 0 ? t.scrollLeft / max : 1);
     };
     const measure = () => {
       const distance = t.scrollWidth - t.clientWidth;
-      const enabled =
-        mq.matches &&
-        !reduced &&
-        items.length >= 3 &&
-        distance > innerWidth * 0.3;
-      pin.current = enabled ? { section, distance } : null;
-      section.classList.toggle("is-pinned", enabled);
-      section.style.height = enabled
-        ? `${wrap.offsetHeight + distance + 160}px`
-        : "";
-      if (!enabled)
-        t.querySelectorAll<HTMLElement>(".project-card").forEach(
-          (x) => (x.style.transform = ""),
-        );
+      setCanSlide(distance > 0);
       update();
     };
     const ro = new ResizeObserver(measure);
     ro.observe(t);
     t.addEventListener("scroll", update, { passive: true });
-    window.addEventListener("scroll", update, { passive: true });
     window.addEventListener("resize", measure);
     measure();
     return () => {
       ro.disconnect();
-      pin.current = null;
-      section.classList.remove("is-pinned");
-      section.style.height = "";
-      window.removeEventListener("scroll", update);
       window.removeEventListener("resize", measure);
       t.removeEventListener("scroll", update);
     };
-  }, [items, reduced]);
-  function advance(n: number) {
+  }, [items]);
+  useEffect(() => {
+    if (reduced || !canSlide || items.length < 2) return;
+    const schedule = () => {
+      autoTimer.current = window.setTimeout(() => {
+        const bounds = root.current?.getBoundingClientRect();
+        const onScreen =
+          bounds && bounds.bottom > 0 && bounds.top < window.innerHeight;
+        if (
+          !paused.current &&
+          onScreen &&
+          document.visibilityState === "visible"
+        ) {
+          advanceRef.current(1, true);
+        }
+        schedule();
+      }, 5000);
+    };
+    schedule();
+    return () => {
+      if (autoTimer.current !== null) window.clearTimeout(autoTimer.current);
+      autoTimer.current = null;
+    };
+  }, [canSlide, items.length, reduced]);
+  function advance(n: number, wrap = false) {
     const t = track.current;
     if (!t) return;
-    if (pin.current) {
-      const { section, distance } = pin.current;
-      const top = window.scrollY + section.getBoundingClientRect().top;
-      window.scrollTo({
-        top:
-          top +
-          Math.min(
-            distance,
-            Math.max(0, t.scrollLeft + n * t.clientWidth * 0.7),
-          ),
-        behavior: "smooth",
-      });
-    } else
-      t.scrollBy({
-        left: n * t.clientWidth * 0.7,
-        behavior: reduced ? "instant" : "smooth",
-      });
+    const max = Math.max(0, t.scrollWidth - t.clientWidth);
+    let target = t.scrollLeft + n * t.clientWidth * 0.7;
+    if (wrap && n > 0 && target >= max) target = 0;
+    if (wrap && n < 0 && target <= 0) target = max;
+    target = Math.min(max, Math.max(0, target));
+    t.scrollTo({
+      left: target,
+      behavior: reduced ? "instant" : "smooth",
+    });
   }
+  advanceRef.current = advance;
   return (
-    <div className="gallery" ref={root}>
+    <div
+      className="gallery"
+      ref={root}
+      onPointerEnter={() => {
+        paused.current = true;
+      }}
+      onPointerLeave={() => {
+        paused.current = false;
+      }}
+      onFocusCapture={() => {
+        paused.current = true;
+      }}
+      onBlurCapture={(e) => {
+        if (!e.currentTarget.contains(e.relatedTarget as Node | null)) {
+          paused.current = false;
+        }
+      }}
+    >
       <div
         className="gallery-track"
         ref={track}
         id={`${id}-track`}
         tabIndex={0}
-        aria-label="Project gallery. Use left and right arrow keys or the controls."
+        aria-label="Project gallery. Use the left and right arrow keys or the controls. Scrolling does not change projects."
+        onWheel={(e) => {
+          // Keep wheel and trackpad gestures from becoming a second slider
+          // control. Vertical page scrolling remains available over the gallery.
+          if (e.shiftKey || Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
+            e.preventDefault();
+          }
+        }}
         onKeyDown={(e) => {
           if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
             e.preventDefault();
@@ -108,41 +121,25 @@ export function PinnedGallery({
         }}
       >
         {items.map(({ id, content: c, is_seed }) => (
-          <article className="project-card" key={id}>
+          <article
+            className="project-card"
+            key={id}
+          >
+            <ProjectCover
+              content={c}
+              href={
+                previewMode
+                  ? `/admin/preview/project/${id}?mode=${previewMode}`
+                  : `/projects/${c.slug}`
+              }
+            />
             <a
               href={
                 previewMode
                   ? `/admin/preview/project/${id}?mode=${previewMode}`
                   : `/projects/${c.slug}`
               }
-              onFocus={(e) => {
-                if (pin.current && track.current) {
-                  const target = e.currentTarget.parentElement!;
-                  const x = target.offsetLeft - track.current.offsetLeft;
-                  const { section, distance } = pin.current;
-                  window.scrollTo({
-                    top:
-                      scrollY +
-                      section.getBoundingClientRect().top +
-                      Math.min(x, distance),
-                    behavior: "instant",
-                  });
-                }
-              }}
             >
-              <div className="project-cover">
-                {c.cover ? (
-                  <img
-                    src={c.cover}
-                    alt={c.alt}
-                    width="1000"
-                    height="680"
-                    loading="lazy"
-                  />
-                ) : (
-                  <span>Project image coming soon</span>
-                )}
-              </div>
               <div className="project-caption">
                 <div>
                   <h3>{c.title}</h3>

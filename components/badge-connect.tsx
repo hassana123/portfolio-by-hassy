@@ -109,7 +109,7 @@ export function BadgeQr({ url }: { url: string }) {
       height="256"
       viewBox={`0 0 ${size + 8} ${size + 8}`}
       role="img"
-      aria-label="LinkedIn QR code"
+      aria-label="CV download QR code"
       shapeRendering="crispEdges"
     >
       <rect width={size + 8} height={size + 8} fill="#FAF8F4" />
@@ -118,7 +118,15 @@ export function BadgeQr({ url }: { url: string }) {
   );
 }
 
-export function BadgeConnect({ url, hold }: { url: string; hold: () => void }) {
+export function BadgeConnect({
+  url,
+  qrUrl = url,
+  hold,
+}: {
+  url?: string;
+  qrUrl?: string;
+  hold: () => void;
+}) {
   return (
     <div
       className="badge-connect"
@@ -129,16 +137,16 @@ export function BadgeConnect({ url, hold }: { url: string; hold: () => void }) {
       }}
       onFocus={hold}
     >
-      <a
-        href={url}
-        target="_blank"
-        rel="noopener noreferrer"
-        aria-label="Open LinkedIn profile (new tab)"
-        draggable={false}
-      >
-        <BadgeQr url={url} />
-      </a>
-      <span>Scan to connect</span>
+      {url ? (
+        <>
+          <a href={url} download aria-label="Download the CV" draggable={false}>
+            <BadgeQr url={qrUrl || url} />
+          </a>
+          <span>Scan to download CV</span>
+        </>
+      ) : (
+        <span className="badge-connect-missing">Add a CV for this role</span>
+      )}
     </div>
   );
 }

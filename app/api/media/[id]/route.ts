@@ -49,6 +49,7 @@ export async function GET(
       },
     });
   const body = range ? data.slice(range.start, range.end + 1) : data;
+  const inline = record.mime.startsWith("image/") || record.mime === "video/mp4";
   return new NextResponse(body.stream(), {
     status: range ? 206 : 200,
     headers: {
@@ -59,7 +60,7 @@ export async function GET(
         : {}),
       "Cache-Control": "private, no-store, max-age=0",
       "X-Content-Type-Options": "nosniff",
-      "Content-Disposition": `${record.mime === "application/pdf" ? "attachment" : "inline"}; filename*=UTF-8''${encodeURIComponent(record.name)}`,
+      "Content-Disposition": `${inline ? "inline" : "attachment"}; filename*=UTF-8''${encodeURIComponent(record.name)}`,
     },
   });
 }
