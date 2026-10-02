@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import type { Settings, Mode } from "@/lib/model";
 import { ArrowDown, ArrowUpRight, Pause, Play, Menu, X } from "lucide-react";
+import { BadgeSocials, BadgeConnect } from "./badge-connect";
 export function useReduced() {
   const [reduced, set] = useState(true);
   useEffect(() => {
@@ -13,40 +14,83 @@ export function useReduced() {
   }, []);
   return reduced;
 }
+function BadgePortrait({ src, alt }: { src: string; alt: string }) {
+  const localFallback = src.startsWith("/demo/") ? src : "/demo/about.jpg";
+  const [visibleSrc, setVisibleSrc] = useState(localFallback);
+
+  useEffect(() => {
+    const fallback = src.startsWith("/demo/") ? src : "/demo/about.jpg";
+    setVisibleSrc(fallback);
+    if (!src || src === fallback) return;
+    const preload = new Image();
+    preload.onload = () => setVisibleSrc(src);
+    preload.onerror = () => setVisibleSrc(fallback);
+    preload.src = src;
+    return () => {
+      preload.onload = null;
+      preload.onerror = null;
+    };
+  }, [src]);
+
+  return (
+    <img
+      className="badge-portrait"
+      src={visibleSrc}
+      alt={alt}
+      width="380"
+      height="380"
+      loading="eager"
+      fetchPriority="high"
+      decoding="async"
+    />
+  );
+}
 export function Hero({
   settings: s,
   mode,
   nextId = "contact",
+  cvUrl,
+  cvQrUrl,
 }: {
   settings: Settings;
   mode: Mode;
   nextId?: string;
+  cvUrl?: string;
+  cvQrUrl?: string;
 }) {
   const p = s.profiles[mode];
   const [flipped, flip] = useState(false);
   const [paused, pause] = useState(false);
+  const [userFlipped, setUserFlipped] = useState(false);
   const [focus, setFocus] = useState(false);
   const [hovered, setHovered] = useState(false);
-  const [tick, reset] = useState(0);
   const [phrase, setPhrase] = useState(0);
+  const [autoReturned, setAutoReturned] = useState(false);
   const reduced = useReduced();
+  const nameParts = s.name.trim().split(/\s+/);
+  const toggleCard = () => {
+    setUserFlipped(true);
+    pause(true);
+    flip((x) => !x);
+  };
   useEffect(() => {
-    if (reduced || paused || focus || hovered) return;
-    let interval: ReturnType<typeof setInterval>;
-    const first = setTimeout(
+    if (reduced || paused || focus || hovered || userFlipped || autoReturned)
+      return;
+    const timer = setTimeout(
       () => {
-        if (!document.hidden) flip((x) => !x);
-        interval = setInterval(() => {
-          if (!document.hidden) flip((x) => !x);
-        }, 3600);
+        if (document.hidden) return;
+        if (flipped) {
+          flip(false);
+          setAutoReturned(true);
+          pause(true);
+        } else {
+          flip(true);
+        }
       },
-      tick ? 3600 : 3100,
+      flipped ? 3600 : 3100,
     );
-    return () => {
-      clearTimeout(first);
-      clearInterval(interval);
-    };
-  }, [reduced, paused, focus, hovered, tick]);
+    return () => clearTimeout(timer);
+  }, [reduced, paused, focus, hovered, userFlipped, autoReturned, flipped]);
   useEffect(() => {
     if (reduced || paused) return;
     const id = setInterval(() => {
@@ -73,40 +117,44 @@ export function Hero({
           </div>
         ))}
       </div>
-      <div className="badge-rig">
+      <div
+        className="badge-rig original-badge"
+        onFocus={() => setFocus(true)}
+        onBlur={(e) => {
+          if (!e.currentTarget.contains(e.relatedTarget)) setFocus(false);
+        }}
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+      >
         <div className="lanyard" aria-hidden="true">
           <span>
             {s.brand} ✦ {s.brand} ✦
           </span>
         </div>
         <div className="clip" aria-hidden="true" />
-        <button
+        <div
           className={`badge ${flipped ? "flipped" : ""}`}
-          onClick={() => {
-            flip((x) => !x);
-            reset((x) => x + 1);
+          onClick={(e) => {
+            if ((e.target as Element).closest("a, button, dialog")) return;
+            toggleCard();
           }}
-          onFocus={() => setFocus(true)}
-          onBlur={() => setFocus(false)}
-          onMouseEnter={() => setHovered(true)}
-          onMouseLeave={() => setHovered(false)}
-          aria-label={`${flipped ? p.back.join(". ") : `${s.name}. ${p.title}. ${s.availability}`}. Show ${flipped ? "front" : "back"} of identity card`}
         >
-          <span className="badge-face badge-front" aria-hidden={flipped}>
+          <div
+            className="badge-face badge-front"
+            aria-hidden={flipped}
+            inert={flipped}
+          >
             <span className="badge-slot" />
             <span className="badge-meta">{s.labels.badgeTagline}</span>
             {s.portrait ? (
-              <img
-                className="badge-portrait"
-                src={s.portrait}
-                alt={s.portraitAlt}
-                width="380"
-                height="380"
-              />
+              <BadgePortrait src={s.portrait} alt={s.portraitAlt} />
             ) : (
               <span className="portrait-empty">Your portrait here</span>
             )}
-            <strong>{s.name}</strong>
+            <strong className="badge-name">
+              <span>{nameParts[0]}</span>
+              <span>{nameParts.slice(1).join(" ")}</span>
+            </strong>
             <span className="badge-title">{p.title}</span>
             {s.availability && (
               <span className="availability">
@@ -114,19 +162,18 @@ export function Hero({
                 {s.availability}
               </span>
             )}
-            <span className="signature">{s.signature}</span>
-            <span className="badge-bottom">
-              <span className="barcode" aria-hidden="true">
-                ┃│┃┃││┃│┃┃│┃│┃┃
+            <div className="badge-front-footer">
+              <BadgeSocials socials={s.socials} />
+              <span className="signature" aria-hidden="true">
+                {s.signature}
               </span>
-              <span>
-                {s.labels.idLabel}
-                <br />
-                {s.labels.flipHint}
-              </span>
-            </span>
-          </span>
-          <span className="badge-face badge-back" aria-hidden={!flipped}>
+            </div>
+          </div>
+          <div
+            className="badge-face badge-back"
+            aria-hidden={!flipped}
+            inert={!flipped}
+          >
             <span className="badge-slot" />
             <span className="eyebrow">{s.labels.backEyebrow}</span>
             <strong>{s.labels.backHeading}</strong>
@@ -136,10 +183,22 @@ export function Hero({
                 {x}
               </span>
             ))}
-            <span className="back-note">{s.personal.split(". ")[0]}</span>
-            <span className="signature">{s.signature}</span>
-            {s.handle && <span>{s.handle}</span>}
-          </span>
+            <div className="badge-back-footer">
+              <BadgeConnect
+                url={cvUrl}
+                qrUrl={cvQrUrl}
+                hold={() => pause(true)}
+              />
+            </div>
+          </div>
+        </div>
+        <button
+          type="button"
+          className="badge-flip-hint"
+          onClick={toggleCard}
+          aria-label={`Show ${flipped ? "front" : "back"} of identity card`}
+        >
+          Flip ↻
         </button>
       </div>
       <div className="hero-bottom">

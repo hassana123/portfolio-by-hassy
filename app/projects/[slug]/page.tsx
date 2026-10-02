@@ -1,6 +1,7 @@
 import { portfolio } from "@/lib/data";
 import { notFound } from "next/navigation";
 import { ContentDetail, DetailNav } from "@/components/details";
+import ProjectCover from "@/components/project-cover";
 export const dynamic = "force-dynamic";
 async function resolve(slug: string) {
   const data = await portfolio();
@@ -70,14 +71,8 @@ export default async function Project({
         <div className="listing">
           {records.map(({ id, content: c, is_seed }) => (
             <article className="project-card" key={id}>
+              <ProjectCover content={c} href={`/projects/${c.slug}`} />
               <a href={`/projects/${c.slug}`}>
-                <div className="project-cover">
-                  {c.cover ? (
-                    <img src={c.cover} alt={c.alt} width="1000" height="680" />
-                  ) : (
-                    <span>Project image coming soon</span>
-                  )}
-                </div>
                 <div className="project-caption">
                   <div>
                     <h3>{c.title}</h3>

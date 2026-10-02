@@ -19,8 +19,16 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Mrs+Saint+Delafield&display=swap"
           rel="stylesheet"
         />
+        <link
+          rel="preload"
+          as="image"
+          href="/demo/about.jpg"
+          fetchPriority="high"
+        />
       </head>
-      <body>
+      {/* Browser extensions can add body attributes before React hydrates.
+          Suppression is scoped to this element; child mismatches still warn. */}
+      <body suppressHydrationWarning>
         <a className="skip" href="#main">
           Skip to content
         </a>

@@ -5,11 +5,12 @@ import {
   ChartNoAxesCombined,
   BookOpen,
 } from "lucide-react";
-import { portfolio } from "@/lib/data";
+import { portfolio, siteUrl } from "@/lib/data";
 import { sectionVisible, type Section, type Kind } from "@/lib/model";
 import { Hero, Navigation, ToolStrip, ContactForm } from "./interactive";
 import { PinnedGallery as Gallery } from "./pinned-gallery";
 import Reveals from "./reveals";
+import AboutVideo from "./about-video";
 export type Portfolio = Awaited<ReturnType<typeof portfolio>>;
 export function Home({ data }: { data: Portfolio }) {
   const { settings: s, mode, records, demo, preview } = data,
@@ -18,6 +19,12 @@ export function Home({ data }: { data: Portfolio }) {
     records
       .filter((x) => x.kind === kind)
       .sort((a, b) => a.content.order - b.content.order);
+  const cvUrl = by("cv").find(
+    (record) =>
+      Boolean(record.content.file) &&
+      record.content.eligibleModes.includes(mode),
+  )?.content.file;
+  const cvQrUrl = cvUrl ? new URL(cvUrl, siteUrl()).toString() : undefined;
   const sectionItems = (section: Section) => {
     const map: Partial<Record<Section["template"], Kind>> = {
       services: "service",
@@ -44,12 +51,13 @@ export function Home({ data }: { data: Portfolio }) {
         )
         .filter((r) => r.content.featured);
     if (section.template === "articles")
-      return by("article").sort(
-        (a, b) =>
-          Number(b.content.featured) - Number(a.content.featured) ||
-          b.content.date.localeCompare(a.content.date) ||
-          a.content.order - b.content.order,
-      );
+      return by("article")
+        .filter((r) => r.content.featured)
+        .sort(
+          (a, b) =>
+            a.content.order - b.content.order ||
+            b.content.date.localeCompare(a.content.date),
+        );
     return map[section.template] ? by(map[section.template]!) : [];
   };
   const sections = s.sections
@@ -75,6 +83,13 @@ export function Home({ data }: { data: Portfolio }) {
           "data-projects",
         ].includes(x.template) || sectionItems(x).length > 0,
     );
+  const navigationSections = [
+    ...sections.filter((x) => x.template !== "skills").slice(0, 5),
+    ...sections.filter((x) => x.template === "articles"),
+  ].filter(
+    (section, index, all) =>
+      all.findIndex((candidate) => candidate.id === section.id) === index,
+  );
   return (
     <div
       style={
@@ -96,24 +111,27 @@ export function Home({ data }: { data: Portfolio }) {
       <Navigation
         brand={s.brand}
         contact={s.labels.contact}
-        links={sections
-          .filter((x) => x.template !== "skills")
-          .slice(0, 5)
-          .map((x) => ({
-            id: x.id,
-            label:
-              x.label === "Front End Engineering"
-                ? "Engineering"
-                : x.label === "A little about me"
-                  ? "About"
-                  : x.label,
-          }))}
+        links={navigationSections.map((x) => ({
+          id: x.id,
+          label:
+            x.template === "articles"
+              ? "Notes"
+              : x.template === "services"
+                ? "What I do"
+                : x.label === "Front End Engineering"
+                  ? "Engineering"
+                  : x.label === "A little about me"
+                    ? "About"
+                    : x.label,
+        }))}
       />
       <main id="main">
         <Reveals />
         <Hero
           settings={s}
           mode={mode}
+          cvUrl={cvUrl}
+          cvQrUrl={cvQrUrl}
           nextId={
             sections.find((x) => x.template !== "skills")?.id || "contact"
           }
@@ -136,36 +154,16 @@ export function Home({ data }: { data: Portfolio }) {
               <div className="wrap">
                 {section.template === "about" ? (
                   <div className="about-grid">
-                    <div className="collage">
-                      <div className="photo-main">
-                        {s.aboutImage ? (
-                          <img
-                            src={s.aboutImage}
-                            alt={s.aboutAlt}
-                            width="540"
-                            height="640"
-                            loading="lazy"
-                          />
-                        ) : (
-                          <div className="photo-placeholder">
-                            Your photo here
-                          </div>
-                        )}
-                      </div>
-                      <div className="photo-small">
-                        {s.collageImage && (
-                          <img
-                            src={s.collageImage}
-                            alt={s.collageAlt}
-                            width="420"
-                            height="300"
-                            loading="lazy"
-                          />
-                        )}
-                        <span className="desk-caption">
-                          {s.labels.collageNote}
-                        </span>
-                      </div>
+                    <div className="about-media">
+                      <AboutVideo
+                        key={`${s.aboutVideo}:${s.aboutPoster}:${s.aboutImage}`}
+                        video={s.aboutVideo}
+                        poster={s.aboutPoster}
+                        image={s.aboutImage}
+                        description={
+                          s.aboutVideo ? s.aboutVideoDescription : s.aboutAlt
+                        }
+                      />
                       <span className="handwritten">{s.labels.greeting}</span>
                       <span className="collage-star" aria-hidden="true">
                         ✳

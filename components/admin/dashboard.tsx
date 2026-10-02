@@ -36,10 +36,13 @@ type Message = {
   notification: string;
   created_at: string;
 };
+type ProjectFilter = "all" | "engineering" | "data";
 const tabs = [
   ["overview", "Overview"],
   ["modes", "Site modes"],
   ["homepage", "Homepage / sections"],
+  ["services", "What I do / Services"],
+  ["skills", "Tools / Skills"],
   ["projects", "Projects"],
   ["articles", "Articles"],
   ["experience", "Experience / education"],
@@ -93,15 +96,93 @@ export default function Dashboard({
     [confirm, setConfirm] = useState(""),
     [preview, setPreview] = useState(false),
     [mode, setMode] = useState("combined"),
+    [projectFilter, setProjectFilter] = useState<ProjectFilter>("all"),
     [mobile, setMobile] = useState(false),
-    [localMessages, setMessages] = useState(messages);
+    [localMessages, setMessages] = useState(messages),
+    [mediaPage, setMediaPage] = useState(1),
+    [mediaPreview, setMediaPreview] = useState<MediaItem | null>(null),
+    [dragId, setDragId] = useState<string | null>(null);
   useEffect(() => {
     if (!demo) setRecords(initialRecords);
   }, [initialRecords, demo]);
   useEffect(() => {
     if (!demo) setMessages(messages);
   }, [messages, demo]);
+  useEffect(() => {
+    setMediaPage((page) =>
+      Math.min(page, Math.max(1, Math.ceil(media.length / 8))),
+    );
+  }, [media.length]);
+  useEffect(() => {
+    if (!mediaPreview) return;
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setMediaPreview(null);
+    };
+    window.addEventListener("keydown", closeOnEscape);
+    return () => window.removeEventListener("keydown", closeOnEscape);
+  }, [mediaPreview]);
   const base = demo ? "/admin/demo" : "/admin";
+  const mediaPageSize = 8;
+  const mediaPageCount = Math.max(1, Math.ceil(media.length / mediaPageSize));
+  const currentMediaPage = Math.min(mediaPage, mediaPageCount);
+  const visibleMedia = media.slice(
+    (currentMediaPage - 1) * mediaPageSize,
+    currentMediaPage * mediaPageSize,
+  );
+  const updateDraft = (id: string, patch: Partial<Content>) =>
+    setRecords((old) =>
+      old.map((r) =>
+        r.id === id ? { ...r, draft: { ...r.draft, ...patch } } : r,
+      ),
+    );
+  const reorderRecords = (kind: Kind, fromId: string, toId: string) => {
+    if (fromId === toId) return;
+    setRecords((old) => {
+      const ordered = old
+        .filter((r) => r.kind === kind && !r.archived)
+        .sort((a, b) => a.draft.order - b.draft.order);
+      const from = ordered.findIndex((r) => r.id === fromId);
+      const to = ordered.findIndex((r) => r.id === toId);
+      if (from < 0 || to < 0) return old;
+      const moved = [...ordered];
+      const [item] = moved.splice(from, 1);
+      moved.splice(to, 0, item);
+      const positions = new Map(moved.map((r, index) => [r.id, index]));
+      return old.map((r) =>
+        positions.has(r.id)
+          ? { ...r, draft: { ...r.draft, order: positions.get(r.id)! } }
+          : r,
+      );
+    });
+  };
+  const saveOrder = (kind: Kind, publish: boolean) => {
+    const items = records
+      .filter((r) => r.kind === kind && !r.archived)
+      .sort((a, b) => a.draft.order - b.draft.order);
+    if (demo) {
+      setStatus(
+        `Demo ${publish ? "publish" : "save"} simulated in this tab only. Nothing is stored.`,
+      );
+      return;
+    }
+    run(async () => {
+      for (const item of items) {
+        const result = await saveContent(
+          item.id,
+          item.kind,
+          item.draft,
+          publish ? "publish" : "draft",
+        );
+        if (!result.ok) return result;
+      }
+      return {
+        ok: true,
+        message: publish
+          ? `${kind === "project" ? "Project" : "Article"} order published.`
+          : `${kind === "project" ? "Project" : "Article"} order saved as a draft.`,
+      };
+    });
+  };
   const navigate = (next: string) => {
     setTab(next);
     setEditor(null);
@@ -241,6 +322,25 @@ export default function Dashboard({
   };
   const seedCount = records.filter((x) => x.is_seed).length;
   const activeKind = kindMap[tab];
+  const projectMatchesFilter = (
+    scope: Content["scope"],
+    filter: ProjectFilter = projectFilter,
+  ) => filter === "all" || scope === filter || scope === "both";
+  const visibleRecords = records
+    .filter((x) => x.kind === activeKind)
+    .filter(
+      (x) => activeKind !== "project" || projectMatchesFilter(x.draft.scope),
+    )
+    .filter((x) =>
+      `${x.draft.title} ${x.draft.summary}`
+        .toLowerCase()
+        .includes(search.toLowerCase()),
+    )
+    .sort((a, b) =>
+      activeKind === "project" || activeKind === "article"
+        ? a.draft.order - b.draft.order
+        : 0,
+    );
   const add = (kind: Kind) => {
     const content = blankContent();
     if (kind === "project") {
@@ -525,6 +625,24 @@ export default function Dashboard({
                   >
                     + Add {activeKind}
                   </button>
+                  {(activeKind === "project" || activeKind === "article") && (
+                    <>
+                      <button
+                        className="admin-button"
+                        disabled={pending}
+                        onClick={() => saveOrder(activeKind, false)}
+                      >
+                        Save dragged order
+                      </button>
+                      <button
+                        className="admin-button primary"
+                        disabled={pending}
+                        onClick={() => saveOrder(activeKind, true)}
+                      >
+                        Publish dragged order
+                      </button>
+                    </>
+                  )}
                 </div>
                 <input
                   aria-label="Search content"
@@ -533,17 +651,73 @@ export default function Dashboard({
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                 />
+                {activeKind === "project" && (
+                  <div
+                    className="admin-tabs"
+                    aria-label="Filter projects by role"
+                  >
+                    {(
+                      [
+                        ["all", "All projects"],
+                        ["engineering", "Frontend Engineering"],
+                        ["data", "Data Analysis"],
+                      ] as const
+                    ).map(([value, label]) => (
+                      <button
+                        key={value}
+                        type="button"
+                        className={projectFilter === value ? "active" : ""}
+                        aria-pressed={projectFilter === value}
+                        onClick={() => setProjectFilter(value)}
+                      >
+                        {label}
+                        <span className="admin-tab-count">
+                          {value === "all"
+                            ? records.filter((x) => x.kind === "project")
+                                .length
+                            : records.filter(
+                                (x) =>
+                                  x.kind === "project" &&
+                                  projectMatchesFilter(x.draft.scope, value),
+                              ).length}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+                {(activeKind === "project" || activeKind === "article") && (
+                  <p className="admin-note">
+                    Drag {activeKind === "project" ? "projects" : "articles"} to
+                    reorder them. You can also change the position or homepage
+                    visibility here without opening the editor. Save keeps
+                    changes as a draft; Publish makes them live.
+                  </p>
+                )}
                 <div className="admin-panel">
-                  {records
-                    .filter(
-                      (x) =>
-                        x.kind === activeKind &&
-                        `${x.draft.title} ${x.draft.summary}`
-                          .toLowerCase()
-                          .includes(search.toLowerCase()),
-                    )
-                    .map((r) => (
-                      <article className="admin-record" key={r.id}>
+                  {visibleRecords.map((r) => (
+                      <article
+                        className={`admin-record${dragId === r.id ? " is-dragging" : ""}`}
+                        key={r.id}
+                        draggable={
+                          activeKind === "project" || activeKind === "article"
+                        }
+                        onDragStart={() => {
+                          if (
+                            activeKind === "project" ||
+                            activeKind === "article"
+                          )
+                            setDragId(r.id);
+                        }}
+                        onDragOver={(e) => {
+                          if (dragId && dragId !== r.id) e.preventDefault();
+                        }}
+                        onDrop={(e) => {
+                          e.preventDefault();
+                          if (dragId) reorderRecords(activeKind, dragId, r.id);
+                          setDragId(null);
+                        }}
+                        onDragEnd={() => setDragId(null)}
+                      >
                         <div>
                           <h3>{r.draft.title}</h3>
                           <p>
@@ -557,6 +731,55 @@ export default function Dashboard({
                             {r.draft.order}
                           </p>
                           {r.source && <p>{r.source}</p>}
+                          {(activeKind === "project" ||
+                            activeKind === "article") && (
+                            <div className="project-quick-edit">
+                              <label>
+                                Position
+                                <input
+                                  type="number"
+                                  min="0"
+                                  max="10000"
+                                  value={r.draft.order}
+                                  onChange={(e) =>
+                                    updateDraft(r.id, {
+                                      order: Number(e.target.value),
+                                    })
+                                  }
+                                />
+                              </label>
+                              <label className="admin-check">
+                                <input
+                                  type="checkbox"
+                                  checked={r.draft.featured}
+                                  onChange={(e) =>
+                                    updateDraft(r.id, {
+                                      featured: e.target.checked,
+                                    })
+                                  }
+                                />
+                                Featured on homepage
+                              </label>
+                              <button
+                                className="admin-button"
+                                disabled={pending}
+                                onClick={() =>
+                                  persist(r.draft, "draft", r.id, r.kind)
+                                }
+                              >
+                                Save placement
+                              </button>
+                              <button
+                                className="admin-button primary"
+                                disabled={pending}
+                                onClick={() =>
+                                  persist(r.draft, "publish", r.id, r.kind)
+                                }
+                              >
+                                Publish placement
+                              </button>
+                            </div>
+                          )}
                         </div>
                         <button
                           className="admin-button"
@@ -612,9 +835,11 @@ export default function Dashboard({
                         </button>
                       </article>
                     ))}
-                  {!records.some((x) => x.kind === activeKind) && (
+                  {!visibleRecords.length && (
                     <p className="empty-state">
-                      A fresh start. Add your first {activeKind}.
+                      {activeKind === "project" && projectFilter !== "all"
+                        ? `No ${projectFilter === "data" ? "Data Analysis" : "Frontend Engineering"} projects match this filter.`
+                        : `A fresh start. Add your first ${activeKind}.`}
                     </p>
                   )}
                 </div>
@@ -625,6 +850,9 @@ export default function Dashboard({
                 <div className="admin-panel">
                   <h2>Upload a file</h2>
                   <p className="admin-note">
+                    Data-analysis downloads support CSV, Excel, PBIX and PBIT files.
+                  </p>
+                  <p className="admin-note">
                     JPG, PNG, WebP, PDF or MP4 · up to 25 MB. Files remain
                     private until referenced by visible published content.
                     Replace an asset by uploading a new file and selecting it in
@@ -632,54 +860,180 @@ export default function Dashboard({
                   </p>
                   <MediaUpload demo={demo} />
                 </div>
-                <div className="media-grid">
-                  {media.map((m) => (
-                    <div className="admin-panel" key={m.id}>
-                      {m.mime.startsWith("image/") && (
-                        <img
-                          src={`/api/media/${m.id}`}
-                          alt={m.alt}
-                          width="300"
-                          height="200"
-                        />
-                      )}
-                      <h3>{m.name}</h3>
-                      <p className="admin-note">
-                        {(m.bytes / 1024).toFixed(0)} KB · {m.mime}
-                      </p>
-                      <code>/api/media/{m.id}</code>
-                      <form
-                        onSubmit={(e) => {
-                          e.preventDefault();
-                          const form = new FormData(e.currentTarget);
-                          run(() => editMedia(m.id, String(form.get("alt"))));
-                        }}
-                      >
-                        <label className="admin-field">
-                          Alt text
-                          <input name="alt" defaultValue={m.alt} />
-                        </label>
-                        <button className="admin-button" disabled={pending}>
-                          Save alt text
-                        </button>
-                      </form>
-                      <button
-                        className="admin-button danger"
-                        disabled={pending}
-                        onClick={() => {
-                          if (
-                            window.confirm(
-                              `Permanently delete unused file “${m.name}”?`,
-                            )
-                          )
-                            run(() => deleteMedia(m.id));
-                        }}
-                      >
-                        Delete unused file
-                      </button>
-                    </div>
-                  ))}
+                <div className="media-table-wrap">
+                  <table className="media-table">
+                    <caption className="sr-only">Uploaded media files</caption>
+                    <thead>
+                      <tr>
+                        <th scope="col">File</th>
+                        <th scope="col">Type</th>
+                        <th scope="col">Size</th>
+                        <th scope="col">Alt text</th>
+                        <th scope="col">
+                          <span className="sr-only">Actions</span>
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {visibleMedia.map((m) => (
+                        <tr key={`table-${m.id}`}>
+                          <th scope="row">
+                            <span className="media-file-name">{m.name}</span>
+                            <code>/api/media/{m.id}</code>
+                          </th>
+                          <td>{m.mime}</td>
+                          <td>{(m.bytes / 1024).toFixed(0)} KB</td>
+                          <td>
+                            {m.alt || (
+                              <span className="admin-note">Missing</span>
+                            )}
+                          </td>
+                          <td>
+                            <div className="media-row-actions">
+                              <button
+                                className="admin-button"
+                                type="button"
+                                onClick={() => setMediaPreview(m)}
+                              >
+                                View{" "}
+                                {m.mime.startsWith("image/") ? "image" : "file"}
+                              </button>
+                              <form
+                                onSubmit={(e) => {
+                                  e.preventDefault();
+                                  const form = new FormData(e.currentTarget);
+                                  run(() =>
+                                    editMedia(m.id, String(form.get("alt"))),
+                                  );
+                                }}
+                              >
+                                <label
+                                  className="sr-only"
+                                  htmlFor={`alt-${m.id}`}
+                                >
+                                  Alt text for {m.name}
+                                </label>
+                                <input
+                                  id={`alt-${m.id}`}
+                                  name="alt"
+                                  defaultValue={m.alt}
+                                  placeholder="Describe this file"
+                                />
+                                <button
+                                  className="admin-button"
+                                  disabled={pending}
+                                >
+                                  Save alt
+                                </button>
+                              </form>
+                              <button
+                                className="admin-button danger"
+                                type="button"
+                                disabled={pending}
+                                onClick={() => {
+                                  if (
+                                    window.confirm(
+                                      `Permanently delete unused file “${m.name}”?`,
+                                    )
+                                  )
+                                    run(() => deleteMedia(m.id));
+                                }}
+                              >
+                                Delete
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                  {!media.length && (
+                    <p className="empty-state">No media uploaded yet.</p>
+                  )}
                 </div>
+                {media.length > mediaPageSize && (
+                  <nav className="media-pagination" aria-label="Media pages">
+                    <button
+                      className="admin-button"
+                      disabled={currentMediaPage === 1}
+                      onClick={() =>
+                        setMediaPage((page) => Math.max(1, page - 1))
+                      }
+                    >
+                      Previous
+                    </button>
+                    <span>
+                      Page {currentMediaPage} of {mediaPageCount}
+                    </span>
+                    <button
+                      className="admin-button"
+                      disabled={currentMediaPage === mediaPageCount}
+                      onClick={() =>
+                        setMediaPage((page) =>
+                          Math.min(mediaPageCount, page + 1),
+                        )
+                      }
+                    >
+                      Next
+                    </button>
+                  </nav>
+                )}
+                {mediaPreview && (
+                  <div
+                    className="media-preview-backdrop"
+                    role="presentation"
+                    onClick={() => setMediaPreview(null)}
+                  >
+                    <div
+                      className="media-preview-dialog"
+                      role="dialog"
+                      aria-modal="true"
+                      aria-labelledby="media-preview-title"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <div className="admin-toolbar">
+                        <div>
+                          <span className="eyebrow">MEDIA PREVIEW</span>
+                          <h2 id="media-preview-title">{mediaPreview.name}</h2>
+                        </div>
+                        <button
+                          className="admin-button"
+                          type="button"
+                          onClick={() => setMediaPreview(null)}
+                        >
+                          Close
+                        </button>
+                      </div>
+                      {mediaPreview.mime.startsWith("image/") ? (
+                        <img
+                          className="media-preview-image"
+                          src={`/api/media/${mediaPreview.id}`}
+                          alt={mediaPreview.alt || mediaPreview.name}
+                        />
+                      ) : mediaPreview.mime.startsWith("video/") ? (
+                        <video
+                          className="media-preview-video"
+                          controls
+                          src={`/api/media/${mediaPreview.id}`}
+                        />
+                      ) : (
+                        <p>
+                          <a
+                            className="admin-button primary"
+                            href={`/api/media/${mediaPreview.id}`}
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            Open file
+                          </a>
+                        </p>
+                      )}
+                      <p className="admin-note">
+                        {mediaPreview.alt || "No alt text saved yet."}
+                      </p>
+                    </div>
+                  </div>
+                )}
               </>
             )}
             {tab === "messages" && (

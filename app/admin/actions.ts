@@ -3,6 +3,7 @@ import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { owner, db, configured } from "@/lib/supabase";
+import { siteUrl } from "@/lib/data";
 import { contentSchema, settingsSchema, kinds, contrast } from "@/lib/model";
 import { demoRecords } from "@/lib/demo";
 import {
@@ -70,16 +71,14 @@ export async function finishUpload(
         "The uploaded content does not match the allowed file type or size.",
       );
     }
-    const { error: saveError } = await c
-      .from("media")
-      .insert({
-        id,
-        path,
-        name: safeName,
-        mime,
-        bytes: file.size,
-        alt: safeAlt,
-      });
+    const { error: saveError } = await c.from("media").insert({
+      id,
+      path,
+      name: safeName,
+      mime,
+      bytes: file.size,
+      alt: safeAlt,
+    });
     if (saveError) throw Error(saveError.message);
     revalidatePath("/admin");
     return {
@@ -126,6 +125,16 @@ export async function login(_: Result, form: FormData): Promise<Result> {
   }
   redirect("/admin");
 }
+export async function googleLogin(_: FormData): Promise<void> {
+  if (!configured()) return;
+  const c = await db();
+  const { data, error } = await c.auth.signInWithOAuth({
+    provider: "google",
+    options: { redirectTo: `${siteUrl()}/auth/callback` },
+  });
+  if (error || !data.url) redirect("/admin/login?oauth=failed");
+  redirect(data.url);
+}
 export async function logout() {
   const c = await db();
   await c.auth.signOut();
@@ -138,6 +147,14 @@ export async function saveSettings(
   const c = await owner();
   try {
     const value = settingsSchema.parse(input);
+    if (
+      publish &&
+      value.aboutVideo &&
+      (!value.aboutPoster || !value.aboutVideoDescription.trim())
+    )
+      throw Error(
+        "Choose an About video poster and add a description before publishing.",
+      );
     if (
       publish &&
       ((value.portrait && !value.portraitAlt) ||

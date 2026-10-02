@@ -231,6 +231,13 @@ export default function SettingsEditor({
                     label="Section image"
                     value={x.image}
                     onChange={(v) => sectionUpdate(i, { ...x, image: v })}
+                    onSelect={(v, item) =>
+                      sectionUpdate(i, {
+                        ...x,
+                        image: v,
+                        ...(item ? { alt: item.alt } : {}),
+                      })
+                    }
                     media={media}
                   />
                   <Field
@@ -334,11 +341,25 @@ export default function SettingsEditor({
           value={s.personal}
           onChange={(v) => update("personal", v)}
         />
+        <h2>ID card & About media</h2>
+        <p className="admin-note">
+          Upload files in Media, then choose their positions below. Uploading
+          alone does not change the homepage. Fill in the image descriptions,
+          Save draft to preview, then choose Publish site to make these
+          selections visible.
+        </p>
         <div className="admin-grid">
           <AssetField
             label="ID portrait"
             value={s.portrait}
             onChange={(v) => update("portrait", v)}
+            onSelect={(v, item) =>
+              set({
+                ...s,
+                portrait: v,
+                ...(item ? { portraitAlt: item.alt } : {}),
+              })
+            }
             media={media}
           />
           <Field
@@ -347,28 +368,48 @@ export default function SettingsEditor({
             onChange={(v) => update("portraitAlt", v)}
           />
           <AssetField
-            label="About photo"
+            label="About image fallback"
             value={s.aboutImage}
             onChange={(v) => update("aboutImage", v)}
+            onSelect={(v, item) =>
+              set({
+                ...s,
+                aboutImage: v,
+                ...(item ? { aboutAlt: item.alt } : {}),
+              })
+            }
             media={media}
           />
           <Field
-            label="About photo alt text"
+            label="About fallback image alt text"
             value={s.aboutAlt}
             onChange={(v) => update("aboutAlt", v)}
           />
           <AssetField
-            label="Second collage image"
-            value={s.collageImage}
-            onChange={(v) => update("collageImage", v)}
+            label="About introduction video (silent MP4)"
+            value={s.aboutVideo}
+            onChange={(v) => update("aboutVideo", v)}
+            media={media}
+            videos
+          />
+          <AssetField
+            label="About video poster"
+            value={s.aboutPoster}
+            onChange={(v) => update("aboutPoster", v)}
             media={media}
           />
           <Field
-            label="Second collage image alt text"
-            value={s.collageAlt}
-            onChange={(v) => update("collageAlt", v)}
+            label="About video / poster description"
+            value={s.aboutVideoDescription}
+            onChange={(v) => update("aboutVideoDescription", v)}
           />
         </div>
+        <p className="admin-note">
+          The About card preserves the entire 16:9 frame and repeats, muted,
+          until paused. Upload the optimised MP4 and its poster through Media,
+          then select them here. Save draft and preview before publishing. Clear
+          the video to show the still image instead.
+        </p>
         <h2>Social links</h2>
         {s.socials.map((x, i) => (
           <div className="block-editor" key={i}>

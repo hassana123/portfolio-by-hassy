@@ -25,13 +25,14 @@ const section = (
   template: Section["template"],
   heading: string,
   scope: Section["scope"] = "general",
+  enabled = true,
 ): Section => ({
   id,
   template,
   label: heading,
   heading,
   intro: "",
-  enabled: true,
+  enabled,
   scope,
   image: "",
   alt: "",
@@ -47,6 +48,10 @@ export const demoSettings: Settings = {
   portraitAlt: "Hassana Abdullahi",
   aboutImage: "/demo/about.jpg",
   aboutAlt: "Hassana Abdullahi",
+  aboutVideo: "/demo/about-hello.mp4",
+  aboutPoster: "/demo/about-hello-poster.jpg",
+  aboutVideoDescription:
+    "Hassana typing on her laptop, then turning to smile and wave hello.",
   collageImage: "/demo/portrait.jpg",
   collageAlt: "Hassana's illustrated avatar from her original portfolio",
   availability: "Open to meaningful collaborations",
@@ -54,11 +59,15 @@ export const demoSettings: Settings = {
     "A curious mind, a love for thoughtful details, and always something new to learn. Sample personal copy — edit before publishing.",
   handle: "",
   email: "",
-  socials: [],
+  socials: [
+    { label: "LinkedIn", url: "https://www.linkedin.com/in/hassana-abdullahi-858040240/" },
+    { label: "GitHub", url: "https://github.com/hassana123" },
+    { label: "X", url: "https://x.com/techSultana" },
+  ],
   profiles: {
     combined: profile(
       "Front End Engineer & Data Analyst",
-      ["ENGINEER", "ANALYST", "TUTOR", "BUILDER"],
+      ["ENGINEER", "ANALYST", "EXPLORER", "BUILDER"],
       "Thoughtful interfaces. Meaningful insights.",
       "I bring ideas to life on the web and find the stories in data. Two disciplines, one curious mind — making complex things feel simple.",
       [
@@ -69,7 +78,7 @@ export const demoSettings: Settings = {
     ),
     engineering: profile(
       "Front End Engineer",
-      ["ENGINEER", "CREATOR", "TUTOR", "BUILDER"],
+      ["ENGINEER", "CREATOR", "EXPLORER", "BUILDER"],
       "I build things people enjoy using.",
       "I turn ideas into thoughtful, accessible web experiences. Clean interfaces, considered details, and a little curiosity.",
       [
@@ -101,10 +110,22 @@ export const demoSettings: Settings = {
       "engineering",
     ),
     section("data-analysis", "data-projects", "Data Analysis", "data"),
-    section("experience", "experience", "Along the way"),
-    section("community", "community", "Learning. Sharing. Growing."),
-    section("certifications", "certifications", "Milestones"),
-    section("testimonials", "testimonials", "Kind words"),
+    section("experience", "experience", "Along the way", "general", false),
+    section(
+      "community",
+      "community",
+      "Learning. Sharing. Growing.",
+      "general",
+      false,
+    ),
+    section(
+      "certifications",
+      "certifications",
+      "Milestones",
+      "general",
+      false,
+    ),
+    section("testimonials", "testimonials", "Kind words", "general", false),
     section("articles", "articles", "Notes from my notebook"),
   ],
   labels: {
