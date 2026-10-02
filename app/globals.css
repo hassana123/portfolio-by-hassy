@@ -1319,6 +1319,76 @@ a:hover {
   font-size: 12px;
   margin-top: 12px;
 }
+.contact-flip {
+  min-height: 430px;
+  perspective: 1200px;
+}
+.contact-flip-inner {
+  min-height: inherit;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 700ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.contact-flip.is-sent .contact-flip-inner {
+  transform: rotateY(180deg);
+}
+.contact-form-front,
+.contact-success {
+  min-height: inherit;
+  backface-visibility: hidden;
+}
+.contact-success {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 14px;
+  padding: 34px;
+  border: 1px solid #ffffff1f;
+  border-radius: 20px;
+  background: linear-gradient(145deg, #282342, #17152c);
+  transform: rotateY(180deg);
+  pointer-events: none;
+}
+.contact-flip.is-sent .contact-form-front {
+  pointer-events: none;
+}
+.contact-flip.is-sent .contact-success {
+  pointer-events: auto;
+}
+.contact-success-mark {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--ink);
+  font-size: 26px;
+  animation: contact-success-pop 700ms 250ms both;
+}
+.contact-success h3 {
+  max-width: 12ch;
+  margin: 0;
+  color: var(--accent);
+  font-size: clamp(28px, 3vw, 44px);
+}
+.contact-success p {
+  max-width: 34ch;
+  margin: 0;
+}
+@keyframes contact-success-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.55) rotate(-15deg);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) rotate(0);
+  }
+}
 .contact footer {
   margin-top: 100px;
   padding-top: 24px;
@@ -1453,6 +1523,27 @@ a:hover {
   font-size: 12px;
   padding: 9px 13px;
   border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.admin-nav-badge {
+  display: inline-grid;
+  place-items: center;
+  min-width: 20px;
+  height: 20px;
+  padding-inline: 5px;
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--ink);
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1;
+}
+.admin-sidebar nav a.active .admin-nav-badge {
+  background: var(--ink);
+  color: var(--accent);
 }
 .admin-sidebar nav a.active {
   background: var(--accent);

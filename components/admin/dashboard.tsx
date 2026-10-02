@@ -102,6 +102,9 @@ export default function Dashboard({
     [mediaPage, setMediaPage] = useState(1),
     [mediaPreview, setMediaPreview] = useState<MediaItem | null>(null),
     [dragId, setDragId] = useState<string | null>(null);
+  const unreadCount = localMessages.filter(
+    (message) => !message.is_read && !message.archived,
+  ).length;
   useEffect(() => {
     if (!demo) setRecords(initialRecords);
   }, [initialRecords, demo]);
@@ -371,6 +374,14 @@ export default function Dashboard({
               }}
             >
               {label}
+              {id === "messages" && unreadCount > 0 && (
+                <span
+                  className="admin-nav-badge"
+                  aria-label={`${unreadCount} unread message${unreadCount === 1 ? "" : "s"}`}
+                >
+                  {unreadCount > 99 ? "99+" : unreadCount}
+                </span>
+              )}
             </a>
           ))}
         </nav>
@@ -1057,6 +1068,13 @@ export default function Dashboard({
                         Email notification: {m.notification}
                       </p>
                       <div className="admin-toolbar">
+                        <a
+                          className="admin-button primary"
+                          href={`mailto:${m.email}?subject=${encodeURIComponent(`Re: ${m.subject || "Your message"}`)}&body=${encodeURIComponent(`Hi ${m.name},\n\n\n\nBest,\nHassana`)}`}
+                          title="Open your email app to reply"
+                        >
+                          Reply by email
+                        </a>
                         {[
                           m.is_read ? "unread" : "read",
                           m.archived ? "restore" : "archive",
