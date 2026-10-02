@@ -316,10 +316,14 @@ export function ContactForm({
   sendLabel: string;
 }) {
   const [state, set] = useState(""),
-    [busy, setBusy] = useState(false);
+    [busy, setBusy] = useState(false),
+    [sent, setSent] = useState(false);
   return (
-    <form
-      className="contact-form"
+    <div className={`contact-flip ${sent ? "is-sent" : ""}`}>
+      <div className="contact-flip-inner">
+        <form
+      className="contact-form contact-form-front"
+      aria-hidden={sent}
       onSubmit={async (e) => {
         e.preventDefault();
         setBusy(true);
@@ -333,7 +337,10 @@ export function ContactForm({
           });
           const d = await r.json();
           set(d.message);
-          if (r.ok) f.reset();
+          if (r.ok) {
+            f.reset();
+            setSent(true);
+          }
         } catch {
           set("Unable to send. Please try again.");
         } finally {
@@ -387,6 +394,32 @@ export function ContactForm({
         <ArrowUpRight size={18} />
       </button>
       <p role="status">{state}</p>
-    </form>
+        </form>
+        <div
+          className="contact-success"
+          role="status"
+          aria-live="polite"
+          aria-hidden={!sent}
+        >
+          <span className="contact-success-mark" aria-hidden="true">
+            âœ¦
+          </span>
+          <span className="eyebrow">MESSAGE RECEIVED</span>
+          <h3>Thank you for reaching out.</h3>
+          <p>Your note is safely in my inbox. I&apos;ll be in touch soon.</p>
+          <button
+            className="button"
+            type="button"
+            onClick={() => {
+              setSent(false);
+              set("");
+            }}
+          >
+            Send another message
+            <ArrowUpRight size={18} />
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }
